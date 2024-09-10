@@ -8,6 +8,12 @@ DB_PASSWORD=secret
 ```
 
 ## How to access envvar in .php files [Both Local and VM]
+2. In all Php files envvars are being used, this line of code needs to be included.
+``` r
+require_once __DIR__ . '/config.php';
+```
+To call the environment variables, enter the following in php.
+
 ```
 $_ENV['DB_HOST']
 
