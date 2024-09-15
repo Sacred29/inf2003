@@ -53,7 +53,7 @@
                 } else {
 
                     //prepare statement
-                    $stmt = $conn->prepare("SELECT * FROM Borrowed JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN where userID=?");
+                    $stmt = $conn->prepare("SELECT * FROM Borrowed JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN where userID=? order by expiryDate desc");
                     $stmt->bind_param("s", $userId);
                     $stmt->execute();
                     $result = $stmt->get_result();
