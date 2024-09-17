@@ -1,4 +1,3 @@
-<!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,7 +18,50 @@
 <body>
     <?php
     include 'inc/nav.php';
-    //require_once __DIR__ . '/config.php';
+    $error = false;
+    require_once __DIR__ . '/config.php';
+
+
+    if (isset($_POST['Lemail'])) {
+        echo "<script>console.log('posted')</script>";
+        login(); //here goes the function call
+    }
+    function login()
+    {
+        global $error;
+
+
+        $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+
+        //check connection
+        if ($conn->connect_error) {
+            $errormsg = "Connection Failed";
+            return;
+        } else {
+
+            //prepare statement
+            $stmt = $conn->prepare("SELECT * FROM Users where email=?");
+            $stmt->bind_param("s", $_POST['Lemail']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+
+                //verify password
+                if (!password_verify($_POST['Lpwd'], $row['password'])) {
+                    $error = true;
+                    echo "<script>console.log('wrong existence')</script>";
+
+                } else {
+                    $userId = $row['userID'];
+                    $email = $row['email'];
+                    $_SESSION['userID'] = $userId;
+                }
+            }
+            $conn->close();
+        }
+    }
+
     ?>
 
     <br>
@@ -43,7 +85,8 @@
             <div class="form-content">
                 <div class="login-form">
                     <h1 class="title">Login</h1>
-                    <form action="loginProcess.php" method="post" enctype="multipart/form-data">
+                    <?php if (isset($error) && $error == true) echo "Wrong Email or Password Try Again";?>
+                    <form method="post" enctype="multipart/form-data">
                         <div class="input-boxes">
                             <div class="input-box">
                                 <i class="fas fa-envelope"></i>

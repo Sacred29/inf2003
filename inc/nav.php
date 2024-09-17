@@ -7,7 +7,6 @@
     </div>
     <ul class="nav-links">
         <?php
-        session_start();
 
         if (isset($_SESSION['userId'])) {
             echo '<li><a href="index.php">Home</a></li>
