@@ -56,7 +56,12 @@
                     $userId = $row['userID'];
                     $email = $row['email'];
                     $_SESSION['userID'] = $userId;
+                    echo "<script>console.log('good')</script>";
+
                 }
+            }else {
+                //user not found
+                $error = true;
             }
             $conn->close();
         }
@@ -85,7 +90,7 @@
             <div class="form-content">
                 <div class="login-form">
                     <h1 class="title">Login</h1>
-                    <?php if (isset($error) && $error == true) echo "Wrong Email or Password Try Again";?>
+                    <?php if (isset($error) && $error == true) echo "<span style='color:red;'>Wrong Email or Password Try Again</span>";?>
                     <form method="post" enctype="multipart/form-data">
                         <div class="input-boxes">
                             <div class="input-box">
