@@ -1,7 +1,6 @@
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
-<!--?php include 'includes/head.php'; ?> -->
 
 <head>
     <title>Borrowed Book List</title>

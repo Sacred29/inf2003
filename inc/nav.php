@@ -6,9 +6,17 @@
         <a href="index.php">MySite</a>
     </div>
     <ul class="nav-links">
-        <li><a href="index.php">Home</a></li>
+        <?php
+        session_start();
+
+        if (isset($_SESSION['userId'])) {
+            echo '<li><a href="index.php">Home</a></li>
         <li><a href="borrowing.php">Books Borrowed</a></li>
-        <li><a href="profile.php">Profile</a></li>
+        <li><a href="profile.php">Profile</a></li>';
+        } else {
+            echo '<li><a href="login.php">Login/Register</a></li>';
+        }
+        ?>
     </ul>
     <div class="hamburger" onclick="toggleMenu()">
         <span class="bar"></span>
