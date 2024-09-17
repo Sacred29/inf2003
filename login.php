@@ -50,13 +50,11 @@
                 //verify password
                 if (!password_verify($_POST['Lpwd'], $row['password'])) {
                     $error = true;
-                    echo "<script>console.log('wrong existence')</script>";
-
                 } else {
                     $userId = $row['userID'];
                     $email = $row['email'];
                     $_SESSION['userID'] = $userId;
-                    echo "<script>console.log('good')</script>";
+                    echo "<script>windows.location.href = 'index.php'</script>";
 
                 }
             }else {
