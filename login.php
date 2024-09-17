@@ -22,7 +22,7 @@
     //require_once __DIR__ . '/config.php';
     ?>
 
-
+    <br>
     <main class="container">
         <input type="checkbox" id="flip">
         <div class="cover">
