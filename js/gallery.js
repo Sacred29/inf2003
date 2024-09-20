@@ -1,43 +1,43 @@
-// Book details (sample data)
-// Remove after db integrated
-const bookDetails = {
-    1: {
-        img: 'book1.jpg',
-        title: 'Book Title 1',
-        author: 'Author Name 1',
-        description: 'This is a description for Book Title 1.'
-    },
-    2: {
-        img: 'book2.jpg',
-        title: 'Book Title 2',
-        author: 'Author Name 2',
-        description: 'This is a description for Book Title 2.'
-    },
-    3: {
-        img: 'book3.jpg',
-        title: 'Book Title 3',
-        author: 'Author Name 3',
-        description: 'This is a description for Book Title 3.'
-    }
-};
-
-// Function to open overlay
-function openOverlay(bookId) {
+// Function to open overlay with dynamic data from DOM
+function openOverlay(bookElement) {
     const overlay = document.getElementById('overlay');
     const overlayImg = document.getElementById('overlay-img');
     const overlayTitle = document.getElementById('overlay-title');
-    const overlayAuthor = document.getElementById('overlay-author');
+    const overlayISBN = document.getElementById('overlay-isbn');
     const overlayDescription = document.getElementById('overlay-description');
     
-    // replace with sql
-    const book = bookDetails[bookId];
+    // Get the necessary book details from the clicked element's child nodes or attributes
+    const imgSrc = bookElement.querySelector('img') ? bookElement.querySelector('img').src : 'default.jpg'; // Fallback image if missing
+    const title = bookElement.querySelector('.bookTitle').textContent;
+    const isbn = bookElement.querySelector('.ISBN').textContent;
+    const publisher = bookElement.querySelector('.publisher').textContent;
+    const quantity = bookElement.querySelector('.quantity').textContent;
+    const language = bookElement.querySelector('.language').textContent;
+    const publishDate = bookElement.querySelector('.publishDate').textContent;
+    const pageCount = bookElement.querySelector('.pageCount').textContent;
+    const overlayBorrowButton = document.getElementById('overlay-borrow-button');
+
+    // Set the overlay content dynamically
+    overlayImg.src = imgSrc;
+    overlayTitle.textContent = title;
+    overlayISBN.innerHTML = `<bold>ISBN</bold>: ${isbn}`;
+    overlayDescription.innerHTML = `Publisher: ${publisher} <br>Quantity: ${quantity} <br>Language: ${language} <br>Published Date: ${publishDate} <br>Page Count: ${pageCount}<br>`;
     
-    overlayImg.src = book.img;
-    overlayTitle.textContent = book.title;
-    overlayAuthor.textContent = `By ${book.author}`;
-    overlayDescription.textContent = book.description;
-    
+    // Grey out borrow button
+    if (quantity < 1) {
+        overlayBorrowButton.disabled = true;
+        overlayBorrowButton.textContent = "Out of Stock"; 
+    } else {
+        overlayBorrowButton.disabled = false; 
+        overlayBorrowButton.textContent = "Borrow"; 
+    }
     overlay.style.display = 'flex';
+}
+
+// Function to borrow 
+// Amend here
+function borrow() {
+    console.log("borrow!!!!!!")
 }
 
 // Function to close overlay
@@ -49,8 +49,7 @@ function closeOverlay() {
 // Add click event listeners to all book elements
 document.querySelectorAll('.book').forEach(book => {
     book.addEventListener('click', function() {
-        const bookId = this.getAttribute('data-book');
-        openOverlay(bookId);
+        openOverlay(this);
     });
 });
 

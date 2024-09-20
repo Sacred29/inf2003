@@ -4,27 +4,42 @@
 <!--?php include 'includes/head.php'; ?> -->
 <link rel="stylesheet" href="css/gallery.css">
 
+
+<!-- Get Booklist -->
+<?php
+require_once __DIR__ . '/config.php';
+$conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+
+if ($conn->connect_error) {
+    $errormsg = "Connection Failed";
+    return;
+} else {
+    $bookList = mysqli_query($conn, "Select * from Booklist");
+}
+?>
+
 <body>
     <?php include 'inc/nav.php'; ?>
 
     <h1>Welcome to MySite</h1>
      <!-- Book Gallery -->
      <div class="gallery-container">
-        <div class="book" data-book="1">
-            <img src="book1.jpg" alt="Book 1 Cover">
-            <h3>Book Title 1</h3>
-            <p>Author Name 1</p>
-        </div>
-        <div class="book" data-book="2">
-            <img src="book2.jpg" alt="Book 2 Cover">
-            <h3>Book Title 2</h3>
-            <p>Author Name 2</p>
-        </div>
-        <div class="book" data-book="3">
-            <img src="book3.jpg" alt="Book 3 Cover">
-            <h3>Book Title 3</h3>
-            <p>Author Name 3</p>
-        </div>
+        <?php
+        
+            while ($row = mysqli_fetch_assoc($bookList)) {
+                echo "<div class='book'>\n";
+                // echo "    <img src='' alt='" . $row['bookTitle'] . " Cover'>\n";
+                echo "    <h3 class='bookTitle'>" . $row['bookTitle'] . "</h3>\n";
+                echo "    <p class='ISBN'>" . $row['ISBN'] . "</p>\n";
+                echo "    <p class='publisher'>" . $row['publisher'] . "</p>\n";
+                echo "    <p class='quantity'>" . $row['quantity'] . "</p>\n";
+                echo "    <p class='language'>" . $row['language'] . "</p>\n";
+                echo "    <p class='publishDate'>" . $row['publishDate'] . "</p>\n";
+                echo "    <p class='pageCount'>" . $row['pageCount'] . "</p>\n";
+                echo "</div>\n\n";
+            }
+        
+        ?>
     </div>
 
     <!-- Overlay Section -->
@@ -33,8 +48,9 @@
             <span class="close-btn" id="close-btn">&times;</span>
             <img id="overlay-img" src="" alt="Book Cover">
             <h3 id="overlay-title"></h3>
-            <p id="overlay-author"></p>
+            <p id="overlay-isbn"></p>
             <p id="overlay-description"></p>
+            <button id="overlay-borrow-button" onClick="borrow()">Borrow</button>
         </div>
     </div>
 
