@@ -16,68 +16,67 @@
 
 </head>
 
-<body>
-    <?php
-    include 'inc/nav.php';
-    require_once __DIR__ . '/config.php';
+<?php
+include 'inc/nav.php';
+require_once __DIR__ . '/config.php';
 
-    //$userId = $_SESSION['userId'];
-    $userId = 1;
-    $firstname = $lastname = $email = "";
+$userId = $_SESSION['userId'];
+$firstname = $lastname = $email = "";
 
-    getUserInfo();
-    function getUserInfo()
-    {
-        global $userId, $firstname, $lastname, $email;
+getUserInfo();
 
-        $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+function getUserInfo()
+{
+    global $userId, $firstname, $lastname, $email;
 
-        //check connection
-        if ($conn->connect_error) {
-            $errormsg = "Connection Failed";
-            return;
-        } else {
+    $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
-            //prepare statement
-            $stmt = $conn->prepare("SELECT * FROM Users where userID=?");
-            $stmt->bind_param("s", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                $firstname = $row['firstName'];
-                $lastname = $row['lastName'];
-                $email = $row['email'];
-            }
+    //check connection
+    if ($conn->connect_error) {
+        $errormsg = "Connection Failed";
+        return;
+    } else {
+        //prepare statement
+        $stmt = $conn->prepare("SELECT * FROM Users WHERE userID=?");
+        $stmt->bind_param("s", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $firstname = $row['firstName'];
+            $lastname = $row['lastName'];
+            $email = $row['email'];
+            $_SESSION['pwd'] = $row['password'];
         }
-        $conn->close();
     }
+    $conn->close();
+}
 
-    ?>
+?>
 
+<body>
     <br>
-
     <div class="w3-container">
         <br>
         <div class="profile-container">
             <h2>User Profile</h2>
-            <form action="/update_profile" method="post">
+            <form action="profile_update_process.php" method="post">
                 <!-- First Name -->
                 <div class="form-group">
                     <label for="first-name">First Name:</label>
-                    <input type="text" id="first-name" name="first_name" value=<?php echo '"' . $firstname . '"'; ?> required>
+                    <input type="text" id="profile_fname" name="profile_fname" value=<?php echo '"' . $firstname . '"'; ?> required>
                 </div>
 
                 <!-- Last Name -->
                 <div class="form-group">
                     <label for="last-name">Last Name:</label>
-                    <input type="text" id="last-name" name="last_name" value=<?php echo '"' . $lastname . '"'; ?> required>
+                    <input type="text" id="profile_lname" name="profile_lname" value=<?php echo '"' . $lastname . '"'; ?> required>
                 </div>
 
                 <!-- Email -->
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value=<?php echo '"' . $email . '"'; ?> required>
+                    <input type="email" id="profile_email" name="profile_email" value=<?php echo '"' . $email . '"'; ?> required>
                 </div>
 
                 <h3>Update Password</h3>
@@ -85,13 +84,13 @@
                 <!-- New Password -->
                 <div class="form-group">
                     <label for="new-password">New Password:</label>
-                    <input type="password" id="new-password" name="new_password" required>
+                    <input type="password" id="new_password" name="new_password">
                 </div>
 
                 <!-- Confirm New Password -->
                 <div class="form-group">
                     <label for="confirm-password">Confirm New Password:</label>
-                    <input type="password" id="confirm-password" name="confirm_password" required>
+                    <input type="password" id="confirm_new_password" name="confirm_new_password">
                 </div>
 
                 <!-- Submit Button -->

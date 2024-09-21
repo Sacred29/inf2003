@@ -15,63 +15,11 @@
 
 </head>
 
+<?php include 'inc/nav.php'; ?>
+
 <body>
-    <?php
-    include 'inc/nav.php';
-    $error = false;
-    require_once __DIR__ . '/config.php';
-
-
-    if (isset($_POST['Lemail'])) {
-        echo "<script>console.log('posted')</script>";
-        login(); //here goes the function call
-    }
-    function login()
-    {
-        global $error;
-
-
-        $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-        //check connection
-        if ($conn->connect_error) {
-            $errormsg = "Connection Failed";
-            return;
-        } else {
-
-            //prepare statement
-            $stmt = $conn->prepare("SELECT * FROM Users where email=?");
-            $stmt->bind_param("s", $_POST['Lemail']);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-
-                //verify password
-                if (!password_verify($_POST['Lpwd'], $row['password'])) {
-                    $error = true;
-                    echo "<script>console.log('wrong existence')</script>";
-
-                } else {
-                    $userId = $row['userID'];
-                    $email = $row['email'];
-                    $_SESSION['userID'] = $userId;
-                    echo "<script>console.log('good')</script>";
-
-                }
-            }else {
-                //user not found
-                $error = true;
-            }
-            $conn->close();
-        }
-    }
-
-    ?>
-
     <br>
     <main class="container">
-        <input type="checkbox" id="flip">
         <div class="cover">
             <div class="front">
                 <img src="images/loginbg.jpg" alt="">
@@ -80,69 +28,31 @@
                     <span class="text-2">Access anytime, anywhere</span>
                 </div>
             </div>
-            <div class="back">
-                <img src="images/loginbg.jpg" alt="">
-                <div class="text">
-                </div>
-            </div>
         </div>
         <div class="forms">
             <div class="form-content">
                 <div class="login-form">
                     <h1 class="title">Login</h1>
-                    <?php if (isset($error) && $error == true) echo "<span style='color:red;'>Wrong Email or Password Try Again</span>";?>
-                    <form method="post" enctype="multipart/form-data">
+                    <form action="login_process.php" method="post">
                         <div class="input-boxes">
+                            <input type="hidden" name="form" value="login">
                             <div class="input-box">
                                 <i class="fas fa-envelope"></i>
-                                <input type="email" id="Lemail" name="Lemail" placeholder="Enter your email" required>
+                                <input type="email" id="login_email" name="login_email" placeholder="Enter your email" required>
                             </div>
                             <div class="input-box">
                                 <i class="fas fa-lock"></i>
-                                <input type="password" id="Lpwd" name="Lpwd" placeholder="Enter your password" required>
+                                <input type="password" id="login_pwd" name="login_pwd" placeholder="Enter your password" required>
                             </div>
-                            <div class="text"><a href="/ForgetPW.php">Forgot password?</a></div>
+                            <div class="text"><a href="">Forgot password?</a></div>
                             <div class="button input-box">
-                                <input type="submit" value="submit">
+                                <input type="submit" value="Login">
                             </div>
-                            <div class="text sign-up-text">Don't have an account? <label for="flip">Signup now</label></div>
+                            <div class="text sign-up-text">Don't have an account? <a href="register.php">Sign up now</a></div>
                         </div>
                     </form>
-                </div>
-                <div class="signup-form">
-                    <div class="title">Signup</div>
-                    <form action="registerProcess.php" method="post" enctype="multipart/form-data">
-                        <div class="input-boxes">
-                            <div class="input-box">
-                                <i class="fas fa-id-card"></i>
-                                <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
-                            </div>
-                            <div class="input-box">
-                                <i class="fas fa-id-card"></i>
-                                <input type="text" id="lname" name="lname" placeholder="Enter your last name" required>
-                            </div>
-                            <div class="input-box">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                            </div>
-                            <div class="input-box">
-                                <i class="fas fa-lock"></i>
-                                <input type="password" id="pwd" name="pwd" placeholder="Enter your password" required>
-                            </div>
-                            <div class="input-box">
-                                <i class="fas fa-lock"></i>
-                                <input type="password" id="confirm_pwd" name="confirm_pwd" placeholder="Confirm your password" required>
-                            </div>
-                            <div class="button input-box">
-                                <input type="submit" value="submit">
-                            </div>
-                        </div>
-                    </form>
-                    <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
                 </div>
             </div>
         </div>
     </main>
-
-
 </body>
