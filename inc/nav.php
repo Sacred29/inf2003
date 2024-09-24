@@ -1,17 +1,22 @@
 <!-- includes/navbar.php -->
 <link rel="stylesheet" href="css/nav.css">
 
+<?php
+if (!isset($_SESSION)) {
+    session_start();
+}
+?>
+
 <nav class="navbar">
     <div class="logo">
         <a href="index.php">MySite</a>
     </div>
     <ul class="nav-links">
         <?php
-
         if (isset($_SESSION['userId'])) {
-            echo '<li><a href="index.php">Home</a></li>
-        <li><a href="borrowing.php">Books Borrowed</a></li>
-        <li><a href="profile.php">Profile</a></li>';
+            echo '<li><a href="index.php">Home</a></li>';
+            echo '<li><a href="borrowing.php">Books Borrowed</a></li>';
+            echo '<li><a href="profile.php">Profile</a></li>';
         } else {
             echo '<li><a href="login.php">Login/Register</a></li>';
         }
