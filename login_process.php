@@ -148,9 +148,9 @@ if ($success == false && $admin == false) {
      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 75vh;">
           <?php
           if ($success && ($admin == false)) {
-               header("Location: index.php");
+               echo "<script>windows.location.href = 'index.php'</script>";
           } else if ($success && ($admin == true)){
-               header("Location: adminStats.php");
+               echo "<script>windows.location.href = 'adminStats.php'</script>";
           }else{
                echo "<h1>Oops! Login Failed!</h1>";
                echo "<p class='h4'>The following input errors were detected:</p>";
