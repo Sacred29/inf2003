@@ -14,7 +14,7 @@ if ($conn->connect_error) {
     $errormsg = "Connection Failed";
     return;
 } else {
-    $bookList = mysqli_query($conn, "Select * from Booklist");
+    $bookList = mysqli_query($conn, "Select * from Booklist inner join bookAuthor on bookAuthor.book_id = ISBN inner join Authors on bookAuthor.author_id = Authors.authorID");
 }
 ?>
 
@@ -29,7 +29,7 @@ if ($conn->connect_error) {
             while ($row = mysqli_fetch_assoc($bookList)) {
                 echo "<div class='book'>\n";
                 // echo "    <img src='' alt='" . $row['bookTitle'] . " Cover'>\n";
-                echo "    <h3 class='bookTitle'>" . $row['bookTitle'] . "</h3>\n";
+                echo "    <h3 class='bookTitle' data-author='". $row['authorName'] . "'>" . $row['bookTitle'] . "</h3>\n";
                 echo "    <p class='ISBN'>" . $row['ISBN'] . "</p>\n";
                 echo "    <p class='publisher'>" . $row['publisher'] . "</p>\n";
                 echo "    <p class='quantity'>" . $row['quantity'] . "</p>\n";

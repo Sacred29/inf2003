@@ -16,12 +16,13 @@ function openOverlay(bookElement) {
     const publishDate = bookElement.querySelector('.publishDate').textContent;
     const pageCount = bookElement.querySelector('.pageCount').textContent;
     const overlayBorrowButton = document.getElementById('overlay-borrow-button');
+    const author = bookElement.querySelector('.bookTitle').dataset.author;
 
     // Set the overlay content dynamically
     overlayImg.src = imgSrc;
     overlayTitle.textContent = title;
     overlayISBN.innerHTML = `<bold>ISBN</bold>: ${isbn}`;
-    overlayDescription.innerHTML = `Publisher: ${publisher} <br>Quantity: ${quantity} <br>Language: ${language} <br>Published Date: ${publishDate} <br>Page Count: ${pageCount}<br>`;
+    overlayDescription.innerHTML = `Author: ${author}<br>Publisher: ${publisher} <br>Quantity: ${quantity} <br>Language: ${language} <br>Published Date: ${publishDate} <br>Page Count: ${pageCount}<br>`;
     
     // Grey out borrow button
     if (quantity < 1) {
