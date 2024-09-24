@@ -1,11 +1,6 @@
 <!-- includes/navbar.php -->
 <link rel="stylesheet" href="css/nav.css">
 
-<?php
-if (!isset($_SESSION)) {
-    session_start();
-}
-?>
 
 <nav class="navbar">
     <div class="logo">

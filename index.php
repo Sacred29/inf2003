@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -7,6 +11,7 @@
 
 <!-- Get Booklist -->
 <?php
+
 require_once __DIR__ . '/config.php';
 $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
@@ -16,6 +21,7 @@ if ($conn->connect_error) {
 } else {
     $bookList = mysqli_query($conn, "Select * from Booklist inner join bookAuthor on bookAuthor.book_id = ISBN inner join Authors on bookAuthor.author_id = Authors.authorID");
 }
+
 
 if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form was submitted
     $isbn = $_POST['form-isbn'];
@@ -29,8 +35,9 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN,userID,borrowedDate,expiryDate) VALUES (?,?,?,?)");
         $stmt->bind_param("ssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate);
         $stmt->execute();
+        echo "<script>console.log('added')</script>";
     }
-}else {
+} else if (isset($_POST['form-isbn'])) {
     echo "<script>alert('Please login first');</script>";
 }
 
@@ -76,7 +83,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
     <script src="js/gallery.js"></script>
 
-    <form id="borrowForm" style="display: none;">
+    <form id="borrowForm" style="display: none;" method="post">
         <input type="text" id="form-isbn" name="form-isbn">
         <input type="text" id="form-borrowdate" name="form-borrowdate">
         <input type="text" id="form-expirydate" name="form-expirydate">

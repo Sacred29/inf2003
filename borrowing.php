@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +37,6 @@
 
             <?php
             //to be removed currently hardcoded to test query
-            $_SESSION['userId'] = 1;
             $userId = $_SESSION['userId'];
             require_once __DIR__ . '/config.php';
 

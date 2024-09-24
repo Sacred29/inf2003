@@ -1,6 +1,8 @@
 <?php
+session_start();
+
 include 'inc/nav.php';
-require_once __DIR__ . '/config.php';
+//require_once __DIR__ . '/config.php';
 
 $login_email = $login_pwd = "";
 
@@ -148,7 +150,7 @@ if ($success == false && $admin == false) {
      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 75vh;">
           <?php
           if ($success && ($admin == false)) {
-               echo "<script>window.location.href = 'index.php'</script>";
+               echo "<script>window.location.href = 'borrowing.php'</script>";
           } else if ($success && ($admin == true)){
                echo "<script>window.location.href = 'adminStats.php'</script>";
           }else{
