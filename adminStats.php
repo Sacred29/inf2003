@@ -22,7 +22,7 @@ include 'inc/nav.php';
 //if not admin send to index.php
 if (isset($_SESSION['type'])){
     if($_SESSION['type'] != 'Admin'){
-        echo "<script>windows.location.href = 'index.php'</script>";
+        echo "<script>window.location.href = 'index.php'</script>";
     }
 }
 ?>

@@ -39,6 +39,16 @@ function openOverlay(bookElement) {
 // Amend here
 function borrow() {
     console.log("borrow!!!!!!")
+    let form = document.getElementById("borrowForm");
+    //set value
+    document.getElementById("form-isbn").value = document.getElementById("overlay-isbn").innerText;
+    let date = new Date();
+    let expirydate = new Date(date.getDate() + 7);
+    let formattedBorrow = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+    let formattedExpiry = expirydate.getFullYear() + "-" + expirydate.getMonth() + "-" + expirydate.getDate();
+    document.getElementById("form-borrowdate").value = formattedBorrow;
+    document.getElementById("form-expirydate").value = formattedExpiry;
+    form.submit();
 }
 
 // Function to close overlay
