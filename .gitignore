@@ -2,3 +2,4 @@
 db-config.env
 .env
 .gitignore
+vendor
