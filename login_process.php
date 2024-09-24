@@ -87,7 +87,7 @@ function adminLogin()
           $success = false;
      } else {
           //prepare statement
-          $stmt = $conn->prepare("SELECT * FROM Admin WHERE adminID=?");
+          $stmt = $conn->prepare("SELECT * FROM Admin WHERE email=?");
           $stmt->bind_param("s", $login_email);
           $stmt->execute();
           $result = $stmt->get_result();
@@ -99,7 +99,7 @@ function adminLogin()
                     array_push($login_error_msg, "Invalid email or password!");
                     $success = false;
                } else {
-                    $userId = $row['userID'];
+                    $userId = $row['adminID'];
                     $_SESSION['userId'] = $userId;
                     $_SESSION['type'] = "Admin";
                     $admin = true;
