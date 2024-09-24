@@ -6,6 +6,7 @@ $login_email = $login_pwd = "";
 
 $login_error_msg = array();
 $success = true;
+$admin = false; 
 
 // Helper function that checks input for malicious or unwanted content.
 function sanitize_input($data)
@@ -62,6 +63,7 @@ function login()
                } else {
                     $userId = $row['userID'];
                     $_SESSION['userId'] = $userId;
+                    $_SESSION['type'] = "User";
                     echo "<script>console.log('Login Successfull!')</script>";
                }
           } else {
@@ -73,9 +75,56 @@ function login()
      }
 }
 
+function adminLogin()
+{
+     global $login_email, $login_pwd, $login_error_msg, $success, $admin;
+
+     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+
+     //check connection
+     if ($conn->connect_error) {
+          array_push($login_error_msg, "Connection failed: " . $conn->connect_error);
+          $success = false;
+     } else {
+          //prepare statement
+          $stmt = $conn->prepare("SELECT * FROM Admin WHERE adminID=?");
+          $stmt->bind_param("s", $login_email);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          if ($result->num_rows > 0) {
+               $row = $result->fetch_assoc();
+
+               //verify password
+               if (!password_verify($login_pwd, $row['password'])) {
+                    array_push($login_error_msg, "Invalid email or password!");
+                    $success = false;
+               } else {
+                    $userId = $row['userID'];
+                    $_SESSION['userId'] = $userId;
+                    $_SESSION['type'] = "Admin";
+                    $admin = true;
+                    $success = true;
+                    echo "<script>console.log('Login as admin Successfull!')</script>";
+               }
+          } else {
+               // User not found
+               array_push($login_error_msg, "Invalid email or password!");
+               $success = false;
+          }
+          $conn->close();
+     }
+}
+
+
 if ($success) {
      login();
 }
+
+if ($success == false && $admin == false) {
+     adminLogin();
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -98,9 +147,11 @@ if ($success) {
 <main data-scroll-section>
      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 75vh;">
           <?php
-          if ($success) {
+          if ($success && ($admin == false)) {
                header("Location: index.php");
-          } else {
+          } else if ($success && ($admin == true)){
+               header("Location: adminStats.php");
+          }else{
                echo "<h1>Oops! Login Failed!</h1>";
                echo "<p class='h4'>The following input errors were detected:</p>";
                echo "<p>";
