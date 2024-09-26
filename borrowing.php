@@ -33,6 +33,7 @@ session_start();
                 <th>Book Name</th>
                 <th>Borrowed Date</th>
                 <th>Expiry Date</th>
+                <th>Status</th>
             </tr>
 
             <?php
@@ -55,8 +56,14 @@ session_start();
                     return;
                 } else {
 
-                    //prepare statement
-                    $stmt = $conn->prepare("SELECT * FROM Borrowed JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN where userID=? order by expiryDate desc");
+                    //update expired
+                    $stmt = $conn->prepare("UPDATE Borrowed INNER JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN set quantity = quantity+1, status = 'Returned' where userID=? AND expiryDate < ? AND status ='Borrowed'");
+                    $date = date("Y-m-d");
+                    $stmt->bind_param("ss", $userId, $date);
+                    $stmt->execute();
+
+                    //get all records of borrowed from user
+                    $stmt = $conn->prepare("SELECT * FROM Borrowed INNER JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN where userID=? order by expiryDate desc");
                     $stmt->bind_param("s", $userId);
                     $stmt->execute();
                     $result = $stmt->get_result();
@@ -66,6 +73,7 @@ session_start();
                         $bookTitle = $row['bookTitle'];
                         $borrowedDate = $row['borrowedDate'];
                         $expiryDate = $row['expiryDate'];
+                        $status = $row['status'];
 
                         echo "<tr>";
                         echo "<td>" . $borrowedID . "</td>";
@@ -73,6 +81,7 @@ session_start();
                         echo "<td>" . $bookTitle . "</td>";
                         echo "<td>" . $borrowedDate . "</td>";
                         echo "<td>" . $expiryDate . "</td>";
+                        echo "<td>" . $status . "</td>";
                         echo "</tr>";
                     }
                     $conn->close();

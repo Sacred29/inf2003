@@ -47,8 +47,8 @@ function borrow() {
     let date = new Date();
     let expirydate = new Date()
     expirydate.setDate(date.getDate() + 7);
-    let formattedBorrow = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
-    let formattedExpiry = expirydate.getFullYear() + "-" + expirydate.getMonth() + "-" + expirydate.getDate();
+    let formattedBorrow = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+    let formattedExpiry = expirydate.getFullYear() + "-" + (expirydate.getMonth()+1) + "-" + expirydate.getDate();
     document.getElementById("form-borrowdate").value = formattedBorrow;
     document.getElementById("form-expirydate").value = formattedExpiry;
     document.getElementById("form-quantity").value = globalQuantity;

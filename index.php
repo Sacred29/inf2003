@@ -28,7 +28,8 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     $borrowDate = $_POST['form-borrowdate'];
     $expiryDate = $_POST['form-expirydate'];
     $quantity = $_POST['form-quantity'];
-
+    $status = "Borrowed";
+    
     if ($conn->connect_error) {
         $errormsg = "Connection Failed";
         return;
@@ -40,10 +41,10 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         $stmt->bind_param('sis', $isbn, $_SESSION['userId'], $date);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows == 0) {
+        if ($result->num_rows > 0) {
             //add to borrow table
-            $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN,userID,borrowedDate,expiryDate) VALUES (?,?,?,?)");
-            $stmt->bind_param("ssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate);
+            $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN, userID, borrowedDate, expiryDate, status) VALUES (?,?,?,?,?)");
+            $stmt->bind_param("sssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate, $status);
             $stmt->execute();
             echo "<script>console.log('added')</script>";
             //update the book count
