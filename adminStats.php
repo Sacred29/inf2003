@@ -29,3 +29,27 @@ if (isset($_SESSION['type'])){
     }
 }
 ?>
+
+<body>
+    <div class="w3-container w3-padding-64">
+        <h2>Admin Dashboard</h2>
+
+        <div class="stat-box">
+            <h3>Total Books Borrowed This Month</h3>
+
+            <a href="borrowed_books_report.php">View Details</a>
+        </div>
+
+        <div class="stat-box">
+            <h3>Most Borrowed Genre</h3>
+
+            <a href="genre_report.php">View Genre Stats</a>
+        </div>
+
+        <div class="stat-box">
+            <h3>Top Borrower</h3>
+
+            <a href="top_borrowers_report.php">View Top Borrowers</a>
+        </div>
+    </div>
+</body>
