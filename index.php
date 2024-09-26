@@ -27,15 +27,20 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     $isbn = $_POST['form-isbn'];
     $borrowDate = $_POST['form-borrowdate'];
     $expiryDate = $_POST['form-expirydate'];
+    $quantity = $_POST['form-quantity'];
 
     if ($conn->connect_error) {
         $errormsg = "Connection Failed";
         return;
-    } else {
+    } else if($quantity > 0) {
         $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN,userID,borrowedDate,expiryDate) VALUES (?,?,?,?)");
         $stmt->bind_param("ssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate);
         $stmt->execute();
         echo "<script>console.log('added')</script>";
+        //update the book count
+        $stmt = $conn->prepare("UPDATE Booklist SET quantity = ?");
+        $stmt->bind_param("i", $quantity - 1);
+        $stmt->execute();
     }
 } else if (isset($_POST['form-isbn'])) {
     echo "<script>alert('Please login first');</script>";
@@ -85,6 +90,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
     <form id="borrowForm" style="display: none;" method="post">
         <input type="text" id="form-isbn" name="form-isbn">
+        <input type="text" id="form-quantity" name="form-borrowdate">
         <input type="text" id="form-borrowdate" name="form-borrowdate">
         <input type="text" id="form-expirydate" name="form-expirydate">
     </form>

@@ -1,3 +1,4 @@
+let globalQuantity;
 // Function to open overlay with dynamic data from DOM
 function openOverlay(bookElement) {
     const overlay = document.getElementById('overlay');
@@ -12,6 +13,7 @@ function openOverlay(bookElement) {
     const isbn = bookElement.querySelector('.ISBN').textContent;
     const publisher = bookElement.querySelector('.publisher').textContent;
     const quantity = bookElement.querySelector('.quantity').textContent;
+    globalQuantity = quantity;
     const language = bookElement.querySelector('.language').textContent;
     const publishDate = bookElement.querySelector('.publishDate').textContent;
     const pageCount = bookElement.querySelector('.pageCount').textContent;
@@ -49,6 +51,7 @@ function borrow() {
     let formattedExpiry = expirydate.getFullYear() + "-" + expirydate.getMonth() + "-" + expirydate.getDate();
     document.getElementById("form-borrowdate").value = formattedBorrow;
     document.getElementById("form-expirydate").value = formattedExpiry;
+    document.getElementById("form-quantity").value = globalQuantity;
     form.submit();
 }
 
