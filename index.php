@@ -32,15 +32,28 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     if ($conn->connect_error) {
         $errormsg = "Connection Failed";
         return;
-    } else if($quantity > 0) {
-        $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN,userID,borrowedDate,expiryDate) VALUES (?,?,?,?)");
-        $stmt->bind_param("ssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate);
+    } else if ($quantity > 0) {
+
+        //check if user has already borrowed the book
+        $stmt = $conn->prepare("Select count(*) from Borrowed where ISBN = ? AND userID = ? AND expiryDate > ?");
+        $date = date("Y-m-d");
+        $stmt->bind_param('sis', $isbn, $_SESSION['userId'], $date);
         $stmt->execute();
-        echo "<script>console.log('added')</script>";
-        //update the book count
-        $stmt = $conn->prepare("UPDATE Booklist SET quantity = ?");
-        $stmt->bind_param("i", $quantity - 1);
-        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0) {
+            //add to borrow table
+            $stmt = $conn->prepare("INSERT INTO Borrowed (ISBN,userID,borrowedDate,expiryDate) VALUES (?,?,?,?)");
+            $stmt->bind_param("ssss", $isbn, $_SESSION['userId'], $borrowDate, $expiryDate);
+            $stmt->execute();
+            echo "<script>console.log('added')</script>";
+            //update the book count
+            $stmt = $conn->prepare("UPDATE Booklist SET quantity = ? where ISBN = ?");
+            $quantity = $quantity - 1;
+            $stmt->bind_param("is", $quantity, $isbn);
+            $stmt->execute();
+        } else {
+            echo "<script>alert('You have already borrowed this book');</script>";
+        }
     }
 } else if (isset($_POST['form-isbn'])) {
     echo "<script>alert('Please login first');</script>";
@@ -90,7 +103,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
     <form id="borrowForm" style="display: none;" method="post">
         <input type="text" id="form-isbn" name="form-isbn">
-        <input type="text" id="form-quantity" name="form-borrowdate">
+        <input type="text" id="form-quantity" name="form-quantity">
         <input type="text" id="form-borrowdate" name="form-borrowdate">
         <input type="text" id="form-expirydate" name="form-expirydate">
     </form>
