@@ -1,14 +1,16 @@
 <?php
+
+use function PHPSTORM_META\type;
+
 session_start();
 
 include 'inc/nav.php';
-//require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
 
 $login_email = $login_pwd = "";
 
 $login_error_msg = array();
 $success = true;
-$admin = false; 
 
 // Helper function that checks input for malicious or unwanted content.
 function sanitize_input($data)
@@ -79,7 +81,7 @@ function login()
 
 function adminLogin()
 {
-     global $login_email, $login_pwd, $login_error_msg, $success, $admin;
+     global $login_email, $login_pwd, $login_error_msg, $success;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
@@ -104,9 +106,7 @@ function adminLogin()
                     $userId = $row['adminID'];
                     $_SESSION['userId'] = $userId;
                     $_SESSION['type'] = "Admin";
-                    $admin = true;
-                    $success = true;
-                    echo "<script>console.log('Login as admin Successfull!')</script>";
+                    echo "<script>console.log('Login as Admin Successfull!')</script>";
                }
           } else {
                // User not found
@@ -117,13 +117,13 @@ function adminLogin()
      }
 }
 
-
+$type = $_REQUEST['type'];
 if ($success) {
-     login();
-}
-
-if ($success == false && $admin == false) {
-     adminLogin();
+     if ($type == 'user') {
+          login();
+     } else if ($type == 'admin') {
+          adminLogin();
+     }
 }
 
 
@@ -149,11 +149,11 @@ if ($success == false && $admin == false) {
 <main data-scroll-section>
      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 75vh;">
           <?php
-          if ($success && ($admin == false)) {
-               echo "<script>window.location.href = 'borrowing.php'</script>";
-          } else if ($success && ($admin == true)){
-               echo "<script>window.location.href = 'adminStats.php'</script>";
-          }else{
+          if ($success && $type == 'user') {
+               echo "<script>window.location.href = 'index.php'</script>";
+          } else if ($success && $type == 'admin') {
+               echo "<script>window.location.href = 'manageBooks.php'</script>";
+          } else {
                echo "<h1>Oops! Login Failed!</h1>";
                echo "<p class='h4'>The following input errors were detected:</p>";
                echo "<p>";

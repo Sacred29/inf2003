@@ -17,8 +17,6 @@
 
 
 <body>
-
-
     <?php
     include 'inc/nav.php';
 

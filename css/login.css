@@ -196,7 +196,7 @@ body {
 }
 
 .form-content .login-form,
-.form-content .signup-form {
+.form-content .admin-login-form {
   width: calc(100% / 2 - 25px);
   overflow-y: auto;
 }
