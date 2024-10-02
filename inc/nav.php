@@ -1,3 +1,20 @@
+<?php
+if (!isset($_SESSION)) {
+    session_start();
+}
+
+if (strpos($_SERVER['REQUEST_URI'], "editBook.php") == True) {
+} else if (strpos($_SERVER['REQUEST_URI'], "addBook.php") == True) {
+} else {
+    if (isset($_SESSION['authors'])) {
+        unset($_SESSION['authors']);
+    }
+    if (isset($_SESSION['genres'])) {
+        unset($_SESSION['genres']);
+    }
+}
+?>
+
 <!-- includes/navbar.php -->
 <link rel="stylesheet" href="css/nav.css">
 
@@ -8,11 +25,17 @@
     </div>
     <ul class="nav-links">
         <?php
-        if (isset($_SESSION['userId'])) {
+        if (isset($_SESSION['userId']) && $_SESSION['type'] == "User") {
             echo '<li><a href="index.php">Home</a></li>';
             echo '<li><a href="borrowing.php">Books Borrowed</a></li>';
             echo '<li><a href="profile.php">Profile</a></li>';
+            echo '<li><a href="logout_process.php">Logout</a></li>';
+        } else if (isset($_SESSION['userId']) && $_SESSION['type'] == "Admin") {
+            echo '<li><a href="manageBooks.php">Manage Books</a></li>';
+            echo '<li><a href="adminStats.php">Dashboard</a></li>';
+            echo '<li><a href="logout_process.php">Logout</a></li>';
         } else {
+            echo '<li><a href="index.php">Home</a></li>';
             echo '<li><a href="login.php">Login/Register</a></li>';
         }
         ?>

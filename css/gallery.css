@@ -113,3 +113,18 @@
         padding: 15px;
     }
 }
+
+.book-header {
+    display: flex;
+    justify-content: space-between;
+    /* This will push the button to the right */
+    align-items: center;
+    /* Align the button and heading vertically */
+    margin-bottom: 20px;
+    /* Optional: Adds some space below the header */
+}
+
+.book-header h2 {
+    margin: 0;
+    /* Remove default margin */
+}

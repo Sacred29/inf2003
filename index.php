@@ -19,7 +19,32 @@ if ($conn->connect_error) {
     $errormsg = "Connection Failed";
     return;
 } else {
-    $bookList = mysqli_query($conn, "Select * from Booklist inner join bookAuthor on bookAuthor.book_id = ISBN inner join Authors on bookAuthor.author_id = Authors.authorID");
+    // pagination 
+    echo '<link rel="stylesheet" href="css/pagination.css">';
+    // Number of records to show per page
+    $limit = 14;
+
+    // Get the current page number from the query string or default to 1
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $limit;
+
+    // Get total number of records for pagination
+    $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM Booklist");
+    $row = mysqli_fetch_assoc($result);
+    $total_records = $row['total'];
+    $total_pages = ceil($total_records / $limit);
+
+    // Retrieve the records for the current page
+    $bookList = mysqli_query($conn, "
+        SELECT * 
+        FROM Booklist 
+        INNER JOIN bookAuthor ON bookAuthor.book_id = Booklist.ISBN 
+        INNER JOIN Authors ON bookAuthor.author_id = Authors.authorID
+        LIMIT $limit OFFSET $offset
+    ");
+
+
+    // $bookList = mysqli_query($conn, "Select * from Booklist inner join bookAuthor on bookAuthor.book_id = ISBN inner join Authors on bookAuthor.author_id = Authors.authorID");
 }
 
 
@@ -68,6 +93,55 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     <?php include 'inc/nav.php'; ?>
 
     <h1>Welcome to MySite</h1>
+
+
+    <!-- Pagination -->
+     <?php
+     // Pagination logic
+    $adjacents = 2; // Number of adjacent pages to show
+    $start = ($page > $adjacents) ? $page - $adjacents : 1;
+    $end = ($page < $total_pages - $adjacents) ? $page + $adjacents : $total_pages;
+
+    echo "<div class='pagination'>";
+
+    // Previous button
+    if ($page > 1) {
+        echo "<a href='?page=" . ($page - 1) . "' class='prev-next'>&laquo;</a>";
+    }
+
+    // First page link if not in the range
+    if ($start > 1) {
+        echo "<a href='?page=1'>1</a>";
+        if ($start > 2) {
+            echo "<span>...</span>"; // Ellipsis for skipped pages
+        }
+    }
+
+    // Page number links
+    for ($i = $start; $i <= $end; $i++) {
+        if ($i == $page) {
+            echo "<strong>$i</strong>"; // Highlight current page
+        } else {
+            echo "<a href='?page=$i'>$i</a>";
+        }
+    }
+
+    // Last page link if not in the range
+    if ($end < $total_pages) {
+        if ($end < $total_pages - 1) {
+            echo "<span>...</span>"; // Ellipsis for skipped pages
+        }
+        echo "<a href='?page=$total_pages'>$total_pages</a>";
+    }
+
+    // Next button
+    if ($page < $total_pages) {
+        echo "<a href='?page=" . ($page + 1) . "' class='prev-next'>&raquo;</a>";
+    }
+
+        echo "</div>";
+    ?>
+
     <!-- Book Gallery -->
     <div class="gallery-container">
         <?php

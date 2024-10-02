@@ -20,6 +20,7 @@
 <body>
     <br>
     <main class="container">
+        <input type="checkbox" id="flip">
         <div class="cover">
             <div class="front">
                 <img src="images/loginbg.jpg" alt="">
@@ -28,12 +29,17 @@
                     <span class="text-2">Access anytime, anywhere</span>
                 </div>
             </div>
+            <div class="back">
+                <img src="images/loginbg.jpg" alt="">
+                <div class="text">
+                </div>
+            </div>
         </div>
         <div class="forms">
             <div class="form-content">
                 <div class="login-form">
                     <h1 class="title">Login</h1>
-                    <form action="login_process.php" method="post">
+                    <form action="login_process.php?type=user" method="post">
                         <div class="input-boxes">
                             <input type="hidden" name="form" value="login">
                             <div class="input-box">
@@ -49,6 +55,27 @@
                                 <input type="submit" value="Login">
                             </div>
                             <div class="text sign-up-text">Don't have an account? <a href="register.php">Sign up now</a></div>
+                            <div class="text sign-up-text">Are you an Admin? <label for="flip">Click here</label></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="admin-login-form">
+                    <h1 class="title">Admin Login</h1>
+                    <form action="login_process.php?type=admin" method="post">
+                        <div class="input-boxes">
+                            <input type="hidden" name="form" value="login">
+                            <div class="input-box">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="login_email" name="login_email" placeholder="Enter your email" required>
+                            </div>
+                            <div class="input-box">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="login_pwd" name="login_pwd" placeholder="Enter your password" required>
+                            </div>
+                            <div class="button input-box">
+                                <input type="submit" value="Login">
+                            </div>
+                            <div class="text sign-up-text">Are you a User? <label for="flip">Click here</label></div>
                         </div>
                     </form>
                 </div>
