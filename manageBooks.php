@@ -1,10 +1,24 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-function getAllBooksDetails()
-{
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+$conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
+     // pagination
+     echo '<link rel="stylesheet" href="css/pagination.css">';
+    // Number of records to show per page
+    $limit = 14;
+
+    // Get the current page number from the query string or default to 1
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $limit;
+    $count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM Booklist
+                                   ");
+     $row = mysqli_fetch_assoc($count);
+     $total_records = $row['total'];
+     $total_pages = ceil($total_records / $limit);
+
+function getAllBooksDetails($conn, $limit, $page, $offset)
+{
      //check connection
      if ($conn->connect_error) {
           $errormsg = "Connection Failed";
@@ -22,7 +36,9 @@ function getAllBooksDetails()
                                    INNER JOIN Authors a ON ba.author_id = a.authorID
                                    INNER JOIN bookGenre bg ON b.ISBN = bg.book_id 
                                    INNER JOIN Genres g ON bg.genre_id = g.genreID 
-                                   GROUP BY b.ISBN;");
+                                   GROUP BY b.ISBN
+                                   LIMIT $limit OFFSET $offset;
+                                   ");
           $stmt->execute();
           $result = $stmt->get_result();
           if ($result->num_rows > 0) {
@@ -65,13 +81,59 @@ function getAllBooksDetails()
                     <button class="btn-primary">Add new Book</button>
                </a>
           </div>
+     <!-- Pagination -->
+     <?php
+          // Pagination logic
+          $adjacents = 2; // Number of adjacent pages to show
+          $start = ($page > $adjacents) ? $page - $adjacents : 1;
+          $end = ($page < $total_pages - $adjacents) ? $page + $adjacents : $total_pages;
+
+          echo "<div class='pagination'>";
+
+          // Previous button
+          if ($page > 1) {
+               echo "<a href='?page=" . ($page - 1) . "' class='prev-next'>&laquo;</a>";
+          }
+
+          // First page link if not in the range
+          if ($start > 1) {
+               echo "<a href='?page=1'>1</a>";
+               if ($start > 2) {
+                    echo "<span>...</span>"; // Ellipsis for skipped pages
+               }
+          }
+
+    // Page number links
+          for ($i = $start; $i <= $end; $i++) {
+               if ($i == $page) {
+                    echo "<strong>$i</strong>"; // Highlight current page
+               } else {
+                    echo "<a href='?page=$i'>$i</a>";
+               }      
+          }
+
+    // Last page link if not in the range
+          if ($end < $total_pages) {
+               if ($end < $total_pages - 1) {
+                    echo "<span>...</span>"; // Ellipsis for skipped pages
+               }
+               echo "<a href='?page=$total_pages'>$total_pages</a>";
+          }
+
+    // Next button
+          if ($page < $total_pages) {
+               echo "<a href='?page=" . ($page + 1) . "' class='prev-next'>&raquo;</a>";
+          }
+
+     echo "</div>";
+    ?>
           <table class="w3-table-all">
                <tr class="w3-theme">
                     <th>ISBN</th>
                     <th>Book Title</th>
                     <th>Publish Date</th>
                </tr>
-               <?php getAllBooksDetails(); ?>
+               <?php getAllBooksDetails($conn, $limit, $page, $offset); ?>
           </table>
      </div>
 </body>
