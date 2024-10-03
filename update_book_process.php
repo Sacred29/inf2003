@@ -16,6 +16,30 @@ $pageCount = $_POST["pageCount"];
 $authors = explode("/", $_POST["authorsArray"]);
 $genres = explode("/", $_POST["genresArray"]);
 
+
+if (
+     empty($_POST["bookTitle"]) or empty($_POST["language"]) or empty($_POST["publisher"]) or
+     empty($_POST["publishDate"]) or empty($_POST["quantity"]) or empty($_POST["pageCount"])
+) {
+     $success = false;
+     array_push($book_detail_error_msg, "Missing book informaitons!");
+} else {
+     $bookTitle = $_POST["bookTitle"];
+     $language = $_POST["language"];
+     $publisher = $_POST["publisher"];
+     $publishDate = $_POST["publishDate"];
+     $quantity = $_POST["quantity"];
+     $pageCount = $_POST["pageCount"];
+}
+
+if (empty($_POST["authorsArray"]) or empty($_POST["genresArray"])) {
+     $success = false;
+     array_push($book_detail_error_msg, "Missing genres/authors informaitons!");
+} else {
+     $authors = explode("/", $_POST["authorsArray"]);
+     $genres = explode("/", $_POST["genresArray"]);
+}
+
 function insertSelectedBookAuthor($author_id)
 {
      global $isbn, $success, $new_book_detail_error_msg;
