@@ -36,10 +36,18 @@ if ($conn->connect_error) {
 
     // Retrieve the records for the current page
     $bookList = mysqli_query($conn, "
-        SELECT * 
-        FROM Booklist 
-        INNER JOIN bookAuthor ON bookAuthor.book_id = Booklist.ISBN 
-        INNER JOIN Authors ON bookAuthor.author_id = Authors.authorID
+        SELECT b.ISBN, 
+        MAX(b.bookTitle) AS bookTitle, MAX(b.quantity) AS quantity, 
+		MAX(b.language) AS language, MAX(b.publisher) AS publisher, 
+		MAX(b.publishDate) AS publishDate, MAX(b.pageCount) AS pageCount, 
+        GROUP_CONCAT(DISTINCT a.authorName ORDER BY a.authorName SEPARATOR ', ') authors, 
+        GROUP_CONCAT(DISTINCT g.genreName ORDER BY g.genreName  SEPARATOR ' / ') genres
+        FROM Booklist b
+        INNER JOIN bookAuthor ba ON b.ISBN = ba.book_id 
+        INNER JOIN Authors a ON ba.author_id = a.authorID
+        INNER JOIN bookGenre bg ON b.ISBN = bg.book_id 
+        INNER JOIN Genres g ON bg.genre_id = g.genreID 
+        GROUP BY b.ISBN
         LIMIT $limit OFFSET $offset
     ");
 
@@ -54,7 +62,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     $expiryDate = $_POST['form-expirydate'];
     $quantity = $_POST['form-quantity'];
     $status = "Borrowed";
-    
+
     if ($conn->connect_error) {
         $errormsg = "Connection Failed";
         return;
@@ -96,8 +104,8 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
 
     <!-- Pagination -->
-     <?php
-     // Pagination logic
+    <?php
+    // Pagination logic
     $adjacents = 2; // Number of adjacent pages to show
     $start = ($page > $adjacents) ? $page - $adjacents : 1;
     $end = ($page < $total_pages - $adjacents) ? $page + $adjacents : $total_pages;
@@ -139,7 +147,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         echo "<a href='?page=" . ($page + 1) . "' class='prev-next'>&raquo;</a>";
     }
 
-        echo "</div>";
+    echo "</div>";
     ?>
 
     <!-- Book Gallery -->
@@ -149,13 +157,14 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         while ($row = mysqli_fetch_assoc($bookList)) {
             echo "<div class='book'>\n";
             // echo "    <img src='' alt='" . $row['bookTitle'] . " Cover'>\n";
-            echo "    <h3 class='bookTitle' data-author='" . $row['authorName'] . "'>" . $row['bookTitle'] . "</h3>\n";
+            echo "    <h3 class='bookTitle' data-author='" . $row['authors'] . "'>" . $row['bookTitle'] . "</h3>\n";
             echo "    <p class='ISBN'>" . $row['ISBN'] . "</p>\n";
             echo "    <p class='publisher'>" . $row['publisher'] . "</p>\n";
             echo "    <p class='quantity'>" . $row['quantity'] . "</p>\n";
             echo "    <p class='language'>" . $row['language'] . "</p>\n";
             echo "    <p class='publishDate'>" . $row['publishDate'] . "</p>\n";
             echo "    <p class='pageCount'>" . $row['pageCount'] . "</p>\n";
+            echo "    <p class='genre' style='display: none;'>" . $row['genres'] . "</p>\n";
             echo "</div>\n\n";
         }
 
@@ -170,6 +179,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
             <h3 id="overlay-title"></h3>
             <p id="overlay-isbn"></p>
             <p id="overlay-description"></p>
+            <p id="overlay-genre"></p>
             <button id="overlay-borrow-button" onClick="borrow()">Borrow</button>
         </div>
     </div>
