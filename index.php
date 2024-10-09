@@ -1,5 +1,68 @@
 <?php
 session_start();
+
+$searchType = isset($_SESSION['searchType']) ? $_SESSION['searchType'] : 'title';
+$searchText = isset($_SESSION['search']) ? $_SESSION['search'] : '';
+
+?>
+
+<?php
+function getBookList ($conn, $searchType, $searchText) {
+    
+
+    // pagination    
+    if (isset($_POST['page'])) {
+        // Update session state with the page number
+        $_SESSION['page'] = (int)$_POST['page'];
+    } 
+    $limit = 14;
+    
+    // Get the current page number from the query string or default to 1
+    $page = isset($_SESSION['page']) ? (int)$_SESSION['page'] : 1;
+    $offset = ($page - 1) * $limit;
+
+    // query
+    $sqlQuery = "
+    SELECT b.ISBN, 
+        b.bookTitle, b.quantity, 
+        b.language, b.publisher, 
+        b.publishDate, b.pageCount,  
+        GROUP_CONCAT(DISTINCT a.authorName ORDER BY a.authorName SEPARATOR ', ') authors, 
+        GROUP_CONCAT(DISTINCT g.genreName ORDER BY g.genreName  SEPARATOR ' / ') genres
+        FROM Booklist b
+        INNER JOIN bookAuthor ba ON b.ISBN = ba.book_id 
+        INNER JOIN Authors a ON ba.author_id = a.authorID
+        INNER JOIN bookGenre bg ON b.ISBN = bg.book_id 
+        INNER JOIN Genres g ON bg.genre_id = g.genreID
+        ";
+    $sqlGroupBy = "
+    GROUP BY b.ISBN
+    ";
+    if (!empty($searchText)){
+        switch ($searchType) {
+            case 'author':
+                $sqlQuery .=" WHERE a.authorName like '$searchText%' ";
+                break;
+            case 'genre':
+                $sqlQuery .= " WHERE g.genreName like '$searchText%' ";
+                break;
+            case 'title':
+                default:
+                $sqlQuery .= " WHERE b.bookTitle like '$searchText%' ";
+                break;
+        }
+    }
+    $sqlQuery .= $sqlGroupBy;
+    // Get total number of records for pagination
+    $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM ($sqlQuery) as subquery");
+    $row = mysqli_fetch_assoc($result);
+    $total_records = $row['total'];
+    $total_pages = ceil($total_records / $limit);
+
+    $bookList = mysqli_query($conn, $sqlQuery . " LIMIT $limit OFFSET $offset");
+
+    return ['total_pages'=>$total_pages, 'bookList'=>$bookList, 'total_records' => $total_records, 'page'=> $page,];
+}
 ?>
 
 <!-- index.php -->
@@ -7,7 +70,8 @@ session_start();
 <html lang="en">
 <!--?php include 'includes/head.php'; ?> -->
 <link rel="stylesheet" href="css/gallery.css">
-
+<link rel="stylesheet" href="css/pagination.css">
+<link rel="stylesheet" href="css/searchbar.css">
 
 <!-- Get Booklist -->
 <?php
@@ -19,40 +83,12 @@ if ($conn->connect_error) {
     $errormsg = "Connection Failed";
     return;
 } else {
-    // pagination 
-    echo '<link rel="stylesheet" href="css/pagination.css">';
-    // Number of records to show per page
-    $limit = 14;
-
-    // Get the current page number from the query string or default to 1
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $offset = ($page - 1) * $limit;
-
-    // Get total number of records for pagination
-    $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM Booklist");
-    $row = mysqli_fetch_assoc($result);
-    $total_records = $row['total'];
-    $total_pages = ceil($total_records / $limit);
-
-    // Retrieve the records for the current page
-    $bookList = mysqli_query($conn, "
-        SELECT b.ISBN, 
-        MAX(b.bookTitle) AS bookTitle, MAX(b.quantity) AS quantity, 
-		MAX(b.language) AS language, MAX(b.publisher) AS publisher, 
-		MAX(b.publishDate) AS publishDate, MAX(b.pageCount) AS pageCount, 
-        GROUP_CONCAT(DISTINCT a.authorName ORDER BY a.authorName SEPARATOR ', ') authors, 
-        GROUP_CONCAT(DISTINCT g.genreName ORDER BY g.genreName  SEPARATOR ' / ') genres
-        FROM Booklist b
-        INNER JOIN bookAuthor ba ON b.ISBN = ba.book_id 
-        INNER JOIN Authors a ON ba.author_id = a.authorID
-        INNER JOIN bookGenre bg ON b.ISBN = bg.book_id 
-        INNER JOIN Genres g ON bg.genre_id = g.genreID 
-        GROUP BY b.ISBN
-        LIMIT $limit OFFSET $offset
-    ");
-
-
-    // $bookList = mysqli_query($conn, "Select * from Booklist inner join bookAuthor on bookAuthor.book_id = ISBN inner join Authors on bookAuthor.author_id = Authors.authorID");
+    
+    $response = getBookList ($conn, $searchType, $searchText);
+    $bookList = $response['bookList'];
+    $total_pages = $response['total_pages'];
+    $total_records = $response['total_records'];
+    $page = $response['page'];
 }
 
 
@@ -102,8 +138,29 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
     <h1>Welcome to MySite</h1>
 
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form method="get" action="index.php">
+            <input type="text" id="search" name="search" placeholder="Search..." autocomplete="off">
+            <div>
+                <input type="radio" id="by-title" name="searchType" value="title" 
+                    <?php echo $searchType === 'title' ? 'checked' : ''; ?>>
+                <label for="by-title">Title</label>
+
+                <input type="radio" id="by-author" name="searchType" value="author"
+                    <?php echo $searchType === 'author' ? 'checked' : ''; ?>>
+                <label for="by-author">Author</label>
+
+                <input type="radio" id="by-genre" name="searchType" value="genre"
+                    <?php echo $searchType === 'genre' ? 'checked' : ''; ?>>
+                <label for="by-genre">Genre</label>
+            </div>
+                <button type="submit">Search</button>
+            </form>
+    </div>
 
     <!-- Pagination -->
+    <form method="POST" action="">
     <?php
     // Pagination logic
     $adjacents = 2; // Number of adjacent pages to show
@@ -114,12 +171,12 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 
     // Previous button
     if ($page > 1) {
-        echo "<a href='?page=" . ($page - 1) . "' class='prev-next'>&laquo;</a>";
+        echo "<button type='submit' name='page' value='" . ($page - 1) . "' class='prev-next'>&laquo;</button>";
     }
 
     // First page link if not in the range
     if ($start > 1) {
-        echo "<a href='?page=1'>1</a>";
+        echo "<button type='submit' name='page' value='1'>1</button>";
         if ($start > 2) {
             echo "<span>...</span>"; // Ellipsis for skipped pages
         }
@@ -130,7 +187,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         if ($i == $page) {
             echo "<strong>$i</strong>"; // Highlight current page
         } else {
-            echo "<a href='?page=$i'>$i</a>";
+            echo "<button type='submit' name='page' value='$i'>$i</button>";
         }
     }
 
@@ -139,16 +196,17 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
         if ($end < $total_pages - 1) {
             echo "<span>...</span>"; // Ellipsis for skipped pages
         }
-        echo "<a href='?page=$total_pages'>$total_pages</a>";
+        echo "<button type='submit' name='page' value='$total_pages'>$total_pages</button>";
     }
 
     // Next button
     if ($page < $total_pages) {
-        echo "<a href='?page=" . ($page + 1) . "' class='prev-next'>&raquo;</a>";
+        echo "<button type='submit' name='page' value='" . ($page + 1) . "' class='prev-next'>&raquo;</button>";
     }
 
     echo "</div>";
     ?>
+    </form>
 
     <!-- Book Gallery -->
     <div class="gallery-container">
@@ -185,6 +243,7 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
     </div>
 
     <script src="js/gallery.js"></script>
+    <script src="js/searchbar.js"></script>
 
     <form id="borrowForm" style="display: none;" method="post">
         <input type="text" id="form-isbn" name="form-isbn">

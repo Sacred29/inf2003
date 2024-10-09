@@ -6,7 +6,7 @@
     font-family: Arial, sans-serif;
 }
 
-.pagination a, .pagination strong {
+.pagination button, .pagination strong {
     display: inline-block;
     padding: 10px 15px;
     margin: 0 4px;
@@ -15,10 +15,12 @@
     color: #333;
     font-size: 16px;
     border-radius: 5px;
+    background: none; /* Ensure the button doesn't have default background */
     transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
 }
 
-.pagination a:hover {
+.pagination button:hover {
     background-color: #f0f0f0;
 }
 
@@ -34,16 +36,16 @@
     font-size: 16px;
 }
 
-.pagination a.prev-next {
+.pagination button.prev-next {
     font-weight: bold;
     padding: 8px 12px;
 }
 
-.pagination a.prev-next:hover {
+.pagination button.prev-next:hover {
     background-color: #f0f0f0;
 }
 
-.pagination a[disabled], .pagination a[aria-disabled="true"] {
+.pagination button[disabled], .pagination button[aria-disabled="true"] {
     color: #ccc;
     pointer-events: none;
     border: 1px solid #eee;
