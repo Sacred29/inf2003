@@ -40,11 +40,11 @@ if (isset($_SESSION['type'])){
             <a href="borrowed_books_report.php">View Details</a>
         </div>
 
-        <div class="stat-box">
+        <!-- <div class="stat-box">
             <h3>Most Borrowed Genre</h3>
 
             <a href="genre_report.php">View Genre Stats</a>
-        </div>
+        </div> -->
 
         <div class="stat-box">
             <h3>Top Borrower</h3>
