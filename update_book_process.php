@@ -42,19 +42,19 @@ if (empty($_POST["authorsArray"]) or empty($_POST["genresArray"])) {
 
 function insertSelectedBookAuthor($author_values)
 {
-     global $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
           $insert_query = "INSERT INTO bookAuthor (book_id, author_id) VALUES " . $author_values;
           $stmt = $conn->prepare($insert_query);
           if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
           }
 
@@ -65,18 +65,18 @@ function insertSelectedBookAuthor($author_values)
 
 function insertSelectedBookGenre($genre_values)
 {
-     global $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
           $insert_query = "INSERT INTO bookGenre (book_id, genre_id) VALUES " . $genre_values;
           $stmt = $conn->prepare($insert_query);
           if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
           }
 
@@ -87,13 +87,13 @@ function insertSelectedBookGenre($genre_values)
 
 function getAuthorID($authorName)
 {
-     global $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
           $stmt = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
@@ -104,10 +104,51 @@ function getAuthorID($authorName)
                $row = $result->fetch_assoc();
                $authorID = $row['authorID'];
           } else if ($result->num_rows == 0) {
-               $authorID = -1;
+               $authorID = addNewAuthor($authorName);
           } else {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
+          }
+
+          $stmt->close();
+     }
+     $conn->close();
+
+     return $authorID;
+}
+
+function addNewAuthor($authorName)
+{
+     global $success, $book_detail_error_msg;
+
+     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+
+     //check connection
+     if ($conn->connect_error) {
+          array_push($book_detail_error_msg, "Connection Failed");
+          return;
+     } else {
+          $stmt = $conn->prepare("INSERT INTO Authors (authorName) VALUES (?)");
+          $stmt->bind_param('s', $authorName);
+          if (!$stmt->execute()) {
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               $success = false;
+          } else {
+               $stmt1 = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
+               $stmt1->bind_param('s', $authorName);
+               $stmt1->execute();
+               $result = $stmt1->get_result();
+               if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $authorID = $row['authorID'];
+               } else if ($result->num_rows == 0) {
+                    $authorID = -1;
+               } else {
+                    array_push($book_detail_error_msg, "Execute failed: (" . $stmt1->errno . ") " .  $stmt1->error);
+                    $success = false;
+               }
+
+               $stmt1->close();
           }
 
           $stmt->close();
@@ -309,7 +350,7 @@ if ($success) {
                     echo $error . "<br>";
                };
                echo "</p>";
-               echo "<form style='display: inline' action='update_book_process.php?isbn=" . $isbn . "' method='get'><button class='btn btn-danger mb-4 btn-lg'>Return to Edit Book</button></form>";
+               echo "<form style='display: inline' action='editBook.php?isbn=" . urlencode($isbn) . "' method='post'><button class='btn btn-danger mb-4 btn-lg'>Return to Edit Book</button></form>";
           }
           ?>
      </div>
