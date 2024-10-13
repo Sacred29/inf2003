@@ -21,7 +21,7 @@ if (strpos($_SERVER['REQUEST_URI'], "editBook.php") == True) {
 
 <nav class="navbar">
     <div class="logo">
-        <a href="index.php">MySite</a>
+        <a href="index.php?unset_search=true">MySite</a>
     </div>
     <ul class="nav-links">
         <?php

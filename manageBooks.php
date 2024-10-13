@@ -1,3 +1,4 @@
+<?php include 'inc/nav.php'; ?>
 <?php
 require_once __DIR__ . '/config.php';
 
@@ -58,7 +59,7 @@ function getAllBooksDetails($conn, $limit, $page, $offset)
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<?php include 'inc/nav.php'; ?>
+
 
 <body>
      <div class="w3-container">

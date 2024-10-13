@@ -1,3 +1,4 @@
+<?php include 'inc/nav.php';?>
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +19,7 @@
 
 <body>
     <?php
-    include 'inc/nav.php';
+    
 
     //if not admin send to index.php
     if (isset($_SESSION['type'])) {
