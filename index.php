@@ -1,6 +1,14 @@
 <?php
 session_start();
 
+if (isset($_GET['unset_search'])) {
+    if (isset($_SESSION['search'])) {
+        unset($_SESSION['search']);
+    }
+    if (isset($_SESSION['searchType'])) {
+        unset($_SESSION['searchType']);
+    }
+}
 $searchType = isset($_SESSION['searchType']) ? $_SESSION['searchType'] : 'title';
 $searchText = isset($_SESSION['search']) ? $_SESSION['search'] : '';
 

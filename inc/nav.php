@@ -26,7 +26,7 @@ if (strpos($_SERVER['REQUEST_URI'], "editBook.php") == True) {
     <ul class="nav-links">
         <?php
         if (isset($_SESSION['userId']) && $_SESSION['type'] == "User") {
-            echo '<li><a href="index.php">Home</a></li>';
+            echo '<li><a href="index.php?unset_search=true">Home</a></li>';
             echo '<li><a href="borrowing.php">Books Borrowed</a></li>';
             echo '<li><a href="profile.php">Profile</a></li>';
             echo '<li><a href="logout_process.php">Logout</a></li>';
@@ -35,7 +35,7 @@ if (strpos($_SERVER['REQUEST_URI'], "editBook.php") == True) {
             echo '<li><a href="adminStats.php">Dashboard</a></li>';
             echo '<li><a href="logout_process.php">Logout</a></li>';
         } else {
-            echo '<li><a href="index.php">Home</a></li>';
+            echo '<li><a href="index.php?unset_search=true">Home</a></li>';
             echo '<li><a href="login.php">Login/Register</a></li>';
         }
         ?>
