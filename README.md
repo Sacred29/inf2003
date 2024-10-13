@@ -31,6 +31,7 @@ Download PHP VSCODE Extension from https://marketplace.visualstudio.com/items?it
 ![alt text](image-6.png)
 
 # User Account Login Credentials
+An Alternative of running our application locally, you may visit our application at http://35.212.179.183
 ## Admin Login
 ```
 email: admin@admin.com
@@ -41,3 +42,6 @@ pw: test
 email: sallygoh@gmail.com
 pw: 12345
 ```
+
+# Video Demo Link
+View our video at https://youtu.be/Rhuv1G0x9Ms
