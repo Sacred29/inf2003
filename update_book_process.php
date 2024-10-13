@@ -40,24 +40,21 @@ if (empty($_POST["authorsArray"]) or empty($_POST["genresArray"])) {
      $genres = explode("/", $_POST["genresArray"]);
 }
 
-function insertSelectedBookAuthor($author_id)
+function insertSelectedBookAuthor($author_values)
 {
-     global $isbn, $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
-          $stmt = $conn->prepare("
-                         INSERT INTO bookAuthor (book_id, author_id) 
-                         VALUES (?, ?)
-                         ");
-          $stmt->bind_param('ss', $isbn, $author_id);
+          $insert_query = "INSERT INTO bookAuthor (book_id, author_id) VALUES " . $author_values;
+          $stmt = $conn->prepare($insert_query);
           if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
           }
 
@@ -66,23 +63,20 @@ function insertSelectedBookAuthor($author_id)
      $conn->close();
 }
 
-function insertSelectedBookGenre($genre_id)
+function insertSelectedBookGenre($genre_values)
 {
-     global $isbn, $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
-          $stmt = $conn->prepare("
-                         INSERT INTO bookGenre (book_id, genre_id) 
-                         VALUES (?, ?)
-                         ");
-          $stmt->bind_param('ss', $isbn, $genre_id);
+          $insert_query = "INSERT INTO bookGenre (book_id, genre_id) VALUES " . $genre_values;
+          $stmt = $conn->prepare($insert_query);
           if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
           }
 
@@ -93,13 +87,13 @@ function insertSelectedBookGenre($genre_id)
 
 function getAuthorID($authorName)
 {
-     global $success, $new_book_detail_error_msg;
+     global $success, $book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
      //check connection
      if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
+          array_push($book_detail_error_msg, "Connection Failed");
           return;
      } else {
           $stmt = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
@@ -110,10 +104,51 @@ function getAuthorID($authorName)
                $row = $result->fetch_assoc();
                $authorID = $row['authorID'];
           } else if ($result->num_rows == 0) {
-               $authorID = -1;
+               $authorID = addNewAuthor($authorName);
           } else {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
                $success = false;
+          }
+
+          $stmt->close();
+     }
+     $conn->close();
+
+     return $authorID;
+}
+
+function addNewAuthor($authorName)
+{
+     global $success, $book_detail_error_msg;
+
+     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+
+     //check connection
+     if ($conn->connect_error) {
+          array_push($book_detail_error_msg, "Connection Failed");
+          return;
+     } else {
+          $stmt = $conn->prepare("INSERT INTO Authors (authorName) VALUES (?)");
+          $stmt->bind_param('s', $authorName);
+          if (!$stmt->execute()) {
+               array_push($book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+               $success = false;
+          } else {
+               $stmt1 = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
+               $stmt1->bind_param('s', $authorName);
+               $stmt1->execute();
+               $result = $stmt1->get_result();
+               if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $authorID = $row['authorID'];
+               } else if ($result->num_rows == 0) {
+                    $authorID = -1;
+               } else {
+                    array_push($book_detail_error_msg, "Execute failed: (" . $stmt1->errno . ") " .  $stmt1->error);
+                    $success = false;
+               }
+
+               $stmt1->close();
           }
 
           $stmt->close();
@@ -125,7 +160,7 @@ function getAuthorID($authorName)
 
 function getGenreID($genreName)
 {
-     global $genres, $success, $new_book_detail_error_msg;
+     global $success, $new_book_detail_error_msg;
 
      $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
@@ -231,36 +266,52 @@ function updateBookDetails()
 
 function updateBookAuthors($insert)
 {
-     global $authors, $success, $book_detail_error_msg;
+     global $authors, $isbn, $success, $book_detail_error_msg;
+
+     $insert_authors = "";
 
      deleteAllSelectedBookAuthors();
      foreach ($authors as $author) {
           $authorID = getAuthorID($author);
           if ($authorID >= 0) {
-               if ($insert === true) {
-                    insertSelectedBookAuthor($authorID);
+               if ($insert_authors === "") {
+                    $insert_authors = "('" . $isbn . "'," . $authorID . ")";
+               } else {
+                    $insert_authors .= ", ('" . $isbn . "'," . $authorID . ")";
                }
           } else {
                array_push($book_detail_error_msg, "Failed to insert Book-Author Entry!");
                $success = false;
           }
      }
+
+     if ($insert === true) {
+          insertSelectedBookAuthor($insert_authors);
+     }
 }
 
 function updateBookGenres()
 {
-     global $genres, $success, $book_detail_error_msg;
+     global $genres, $isbn, $success, $book_detail_error_msg;
+
+     $insert_genres = "";
 
      deleteAllSelectedBookGenres();
      foreach ($genres as $genre) {
           $genreID = getGenreID($genre);
           if ($genreID >= 0) {
-               insertSelectedBookGenre($genreID);
+               if ($insert_genres === "") {
+                    $insert_genres = "('" . $isbn . "'," . $genreID . ")";
+               } else {
+                    $insert_genres .= ", ('" . $isbn . "'," . $genreID . ")";
+               }
           } else {
                array_push($book_detail_error_msg, "Failed to insert Book-Author Entry!");
                $success = false;
           }
      }
+
+     insertSelectedBookGenre($insert_genres);
 }
 
 if ($success) {
@@ -299,7 +350,7 @@ if ($success) {
                     echo $error . "<br>";
                };
                echo "</p>";
-               echo "<form style='display: inline' action='update_book_process.php?isbn=" . $isbn . "' method='get'><button class='btn btn-danger mb-4 btn-lg'>Return to Edit Book</button></form>";
+               echo "<form style='display: inline' action='editBook.php?isbn=" . urlencode($isbn) . "' method='post'><button class='btn btn-danger mb-4 btn-lg'>Return to Edit Book</button></form>";
           }
           ?>
      </div>

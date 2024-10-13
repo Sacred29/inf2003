@@ -33,7 +33,7 @@ $(document).ready(function () {
      // Delete Genre AJAX
      $(document).on('click', '.deleteGenreBtn', function (event) {
           event.preventDefault();
-          let genre = $('#genre').val(); // Get the selected genre
+          let genre = $(this).data('genre'); // Get the selected genre
           let genres = $('#genresArray').val();
           $.ajax({
                url: 'delete_genre_process.php', // Backend script for deleting the genre

@@ -66,7 +66,9 @@
                                                     JOIN ELibDatabase.Users ON Borrowed.userID = Users.userID
                                                     WHERE MONTH(Borrowed.borrowedDate) = MONTH(CURRENT_DATE())
                                                     AND YEAR(Borrowed.borrowedDate) = YEAR(CURRENT_DATE())
-                                                    GROUP BY Borrowed.userID, Users.userID;");
+                                                    GROUP BY Borrowed.userID, Users.userID
+                                                    ORDER BY booksBorrowed DESC
+                                                    LIMIT 5;");
                     $stmt->execute();
                     $result = $stmt->get_result();
                     if ($result->num_rows > 0) {
