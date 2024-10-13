@@ -68,7 +68,8 @@
                                                     JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN
                                                     WHERE MONTH(Borrowed.borrowedDate) = MONTH(CURRENT_DATE())
                                                     AND YEAR(Borrowed.borrowedDate) = YEAR(CURRENT_DATE())
-                                                    GROUP BY Borrowed.ISBN, Booklist.bookTitle;");
+                                                    GROUP BY Borrowed.ISBN, Booklist.bookTitle
+                                                    ORDER BY totalBorrowed DESC;");
                     $stmt->execute();
                     $result = $stmt->get_result();
                     if ($result->num_rows > 0) {
