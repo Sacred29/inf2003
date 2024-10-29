@@ -262,3 +262,21 @@ if (isset($_POST['form-isbn']) && isset($_SESSION['userId'])) { //check if form 
 </body>
 
 </html>
+
+<?php
+// Example Code
+require_once __DIR__ . '/config.php';
+
+require 'vendor/autoload.php'; 
+
+$client = new MongoDB\Client($_ENV['MONGDB_HOST']);
+$db = $client->selectDatabase('eLibDatabase');
+$collection = $db->selectCollection('booklist');
+$documents = $collection->find();
+
+// Display the documents
+foreach ($documents as $document) {
+    print_r($document);
+}
+
+?>
