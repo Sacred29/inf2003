@@ -1,5 +1,4 @@
 .vscode
 db-config.env
 .env
-.gitignore
-vendor
+vendor/
