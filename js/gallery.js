@@ -6,7 +6,8 @@ function openOverlay(bookElement) {
     const overlayTitle = document.getElementById('overlay-title');
     const overlayISBN = document.getElementById('overlay-isbn');
     const overlayDescription = document.getElementById('overlay-description');
-    
+    const overlayGenre = document.getElementById('overlay-genre');
+
     // Get the necessary book details from the clicked element's child nodes or attributes
     const imgSrc = bookElement.querySelector('img') ? bookElement.querySelector('img').src : 'default.jpg'; // Fallback image if missing
     const title = bookElement.querySelector('.bookTitle').textContent;
@@ -19,20 +20,22 @@ function openOverlay(bookElement) {
     const pageCount = bookElement.querySelector('.pageCount').textContent;
     const overlayBorrowButton = document.getElementById('overlay-borrow-button');
     const author = bookElement.querySelector('.bookTitle').dataset.author;
+    const genre = bookElement.querySelector('.genre').textContent;
 
     // Set the overlay content dynamically
     overlayImg.src = imgSrc;
     overlayTitle.textContent = title;
     overlayISBN.innerHTML = `<bold>ISBN</bold>: ${isbn}`;
-    overlayDescription.innerHTML = `Author: ${author}<br>Publisher: ${publisher} <br>Quantity: ${quantity} <br>Language: ${language} <br>Published Date: ${publishDate} <br>Page Count: ${pageCount}<br>`;
-    
+    overlayDescription.innerHTML = `Authors: ${author}<br>Publisher: ${publisher} <br>Quantity: ${quantity} <br>Language: ${language} <br>Published Date: ${publishDate} <br>Page Count: ${pageCount}`;
+    overlayGenre.innerHTML = `Genres: ${genre}<br>`;
+
     // Grey out borrow button
     if (quantity < 1) {
         overlayBorrowButton.disabled = true;
-        overlayBorrowButton.textContent = "Out of Stock"; 
+        overlayBorrowButton.textContent = "Out of Stock";
     } else {
-        overlayBorrowButton.disabled = false; 
-        overlayBorrowButton.textContent = "Borrow"; 
+        overlayBorrowButton.disabled = false;
+        overlayBorrowButton.textContent = "Borrow";
     }
     overlay.style.display = 'flex';
 }
@@ -47,8 +50,8 @@ function borrow() {
     let date = new Date();
     let expirydate = new Date()
     expirydate.setDate(date.getDate() + 7);
-    let formattedBorrow = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
-    let formattedExpiry = expirydate.getFullYear() + "-" + (expirydate.getMonth()+1) + "-" + expirydate.getDate();
+    let formattedBorrow = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    let formattedExpiry = expirydate.getFullYear() + "-" + (expirydate.getMonth() + 1) + "-" + expirydate.getDate();
     document.getElementById("form-borrowdate").value = formattedBorrow;
     document.getElementById("form-expirydate").value = formattedExpiry;
     document.getElementById("form-quantity").value = globalQuantity;
@@ -63,7 +66,7 @@ function closeOverlay() {
 
 // Add click event listeners to all book elements
 document.querySelectorAll('.book').forEach(book => {
-    book.addEventListener('click', function() {
+    book.addEventListener('click', function () {
         openOverlay(this);
     });
 });

@@ -1,0 +1,64 @@
+/* Center the form wrapper */
+.form-wrapper {
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     margin: 0 auto;
+     width: 50%;
+     /* Adjust the width to your preference */
+}
+
+/* Style for form containers */
+.form-container {
+     width: 100%;
+     max-width: 400px;
+     border: 1px solid #ccc;
+     padding: 20px;
+     margin-bottom: 20px;
+     background-color: #f9f9f9;
+     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+     border-radius: 10px;
+     /* Rounded corners (optional) */
+}
+
+label,
+input,
+select,
+button {
+     display: block;
+     width: 100%;
+     margin-bottom: 10px;
+}
+
+input,
+select {
+     padding: 10px;
+     font-size: 16px;
+     box-sizing: border-box;
+}
+
+button {
+     padding: 10px;
+     background-color: #4CAF50;
+     color: white;
+     border: none;
+     cursor: pointer;
+}
+
+button:hover {
+     background-color: #45a049;
+}
+
+ul {
+     list-style-type: none;
+     padding: 0;
+}
+
+ul li {
+     margin-bottom: 5px;
+}
+
+ul li form {
+     display: inline;
+}

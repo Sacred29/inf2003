@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php include 'inc/nav.php';?>
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +18,6 @@
 </head>
 
 <?php
-include 'inc/nav.php';
 require_once __DIR__ . '/config.php';
 
 $userId = $_SESSION['userId'];

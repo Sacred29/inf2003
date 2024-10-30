@@ -1,37 +1,47 @@
-# Environment Setup file
-1. Create a .env file
-## Sample .env file
-```
-DB_HOST=localhost
-DB_USERNAME=root
-DB_PASSWORD=secret
+# Environment Setup 
+## 1. Download composer from https://getcomposer.org/download/  
+## 2. Open Project Root folder and install composer
+
+``` shell
+composer install
 ```
 
-## How to access envvar in .php files [Both Local and VM]
-2. In all Php files envvars are being used, this line of code needs to be included.
-``` r
-require_once __DIR__ . '/config.php';
-```
-To call the environment variables, enter the following in php.
 
+## 3. Create Project .env file
 ```
-$_ENV['DB_HOST']
+DB_HOST=35.212.179.183
+DB_USERNAME=inf2003-sqldev
+DB_PASSWORD=toor
+DB_NAME=ELibDatabase
+```
+.env file should reside in the root project folder.
 
-'''You can test by echoing the variable'''
-'''<?php echo $_ENV['DB_HOST']?>'''
-````
+## 4. DownLoad PHP
+Download PHP from https://windows.php.net/download  
+Download PHP VSCODE Extension from https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
 
-## Adding Environment Variables to VM in APACHE2 UBUNTU 22.04
-open this file.
+
+
+## 5. Install php
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
+![alt text](image-5.png)
+![alt text](image-6.png)
+
+# User Account Login Credentials
+An Alternative of running our application locally, you may visit our application at http://35.212.179.183
+## Admin Login
 ```
-sudo nano /etc/apache2/envvars
+email: admin@admin.com
+pw: test
+```
+## User Login
+```
+email: sallygoh@gmail.com
+pw: 12345
 ```
 
-Add variables like this at the bottom of the file
-```
-export varName=varValue
-```
-Sudo Restart apache2
-```
-sudo systemctl restart apache2
-```
+# Video Demo Link
+View our video at https://youtu.be/Rhuv1G0x9Ms

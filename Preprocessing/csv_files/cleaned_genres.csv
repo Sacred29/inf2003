@@ -1,0 +1,891 @@
+genres,genre_id
+Fantasy,1
+Young Adult,2
+Fiction,3
+"Fantasy,Magic",4
+Childrens,5
+Adventure,6
+Audiobook,7
+"Childrens,Middle Grade",8
+Classics,9
+Science Fiction Fantasy,10
+"Fantasy,Supernatural",11
+Mystery,12
+"Fantasy,Paranormal",13
+Novels,14
+"Paranormal,Wizards",15
+Science Fiction,16
+Humor,17
+"Humor,Comedy",18
+"European Literature,British Literature",19
+Nonfiction,20
+Science,21
+History,22
+"Science,Physics",23
+"Science,Popular Science",24
+Historical,25
+Philosophy,26
+Unfinished,27
+Travel,28
+"Cultural,Africa",29
+"Autobiography,Memoir",30
+"Eastern Africa,Kenya",31
+Biography,32
+"Travel,Travelogue",33
+"Language,Writing",34
+"Humanities,Language",35
+Reference,36
+"Humanities,Linguistics",37
+"Language,Words",38
+"Reference,Dictionaries",39
+"Writing,Books About Books",40
+"Cultural,Australia",41
+"Writing,Essays",42
+"Literature,American",43
+The United States Of America,44
+"Fantasy,Epic Fantasy",45
+"Fantasy,High Fantasy",46
+Literature,47
+Art,48
+Media Tie In,49
+"Culture,Film",50
+Adult,51
+"Computer Science,Programming",52
+"Science,Technology",53
+"Computer Science,Technical",54
+"Computer Science,Computers",55
+"Computer Science,Software",56
+"Science,Computer Science",57
+"Internet,Web",58
+"Computer Science,Coding",59
+"Adventure,Survival",60
+"Academic,School",61
+Realistic Fiction,62
+"Academic,Read For School",63
+Education,64
+"Biography,Autobiography",65
+Biography Memoir,66
+"Criticism,Literary Criticism",67
+Criticism,68
+Romance,69
+Anthologies,70
+"Adult Fiction,Erotica",71
+"Romance,Paranormal Romance",72
+"Paranormal,Shapeshifters",73
+"Romance,Erotic Romance",74
+"Fantasy,Urban Fantasy",75
+"Paranormal,Fairies",76
+"Fairies,Fae",77
+"Mythology,Mermaids",78
+"Fantasy,Fairy Tales",79
+"Young Adult,Young Adult Fantasy",80
+"Childrens,Juvenile",81
+"Young Adult,Coming Of Age",82
+"Historical,Historical Fiction",83
+"Cultural,Ireland",84
+"Literature,14th Century",85
+"Historical,Medieval",86
+Literary Fiction,87
+"European Literature,Irish Literature",88
+LGBT,89
+"Romance,Historical Romance",90
+Gothic,91
+"Literature,19th Century",92
+"Cultural,African American",93
+Book Club,94
+Race,95
+"Economics,Finance",96
+Economics,97
+Business,98
+"Currency,Money",99
+Politics,100
+"Games,Role Playing Games",101
+"Writing,Journalism",102
+"Environment,Nature",103
+"Anthologies,Collections",104
+Transport,105
+"Health,Medicine",106
+Medical,107
+Health,108
+Environment,109
+"Science,Geology",110
+"Science,Natural History",111
+"Science,Engineering",112
+"Science,Geography",113
+War,114
+"War,Military Fiction",115
+"Military,Military History",116
+Food and Drink,117
+"Food and Drink,Food",118
+Short Stories,119
+Plays,120
+Drama,121
+"Plays,Theatre",122
+Feminism,123
+Contemporary,124
+Womens,125
+"Literature,20th Century",126
+Teaching,127
+"Art,Crafts",128
+"Crafts,Beading",129
+Christian,130
+"Religion,Faith",131
+"Religion,Christianity",132
+Spirituality,133
+"Christian,Christian Non Fiction",134
+"Christian,Christian Living",135
+Inspirational,136
+"Childrens,Childrens Classics",137
+Parenting,138
+Self Help,139
+Family,140
+Jewellery,141
+"Crafts,Jewellery Making",142
+"Space,Space Opera",143
+Space,144
+Speculative Fiction,145
+"Southern Africa,South Africa",146
+Leadership,147
+Productivity,148
+Performing Arts,149
+How To,150
+"Computers,Internet",151
+Computers,152
+Horror,153
+"Food and Drink,Cookbooks",154
+"Cultural,Russia",155
+"Literature,Russian Literature",156
+Literary Criticism,157
+"Womens Fiction,Chick Lit",158
+Womens Fiction,159
+"Cultural,India",160
+"Asian Literature,Indian Literature",161
+"Cultural,Asia",162
+"Spy Thriller,Espionage",163
+"Crime,True Crime",164
+"Mystery,Crime",165
+"North American Hi...,American History",166
+"Social Movements,Social Justice",167
+Anthropology,168
+Social Science,169
+"Science,Astronomy",170
+"Science,History Of Science",171
+"Science Fiction,Time Travel",172
+"Historical,Stuart",173
+"Literature,17th Century",174
+"Mystery,Historical Mystery",175
+"Thriller,Mystery Thriller",176
+"Mystery,Detective",177
+"Transport,Motorcycle",178
+"Sports,Motorcycling",179
+"Science Fiction,Steampunk",180
+Epic,181
+"Mystery,Noir",182
+Thriller,183
+"Mystery,Hard Boiled",184
+"Academic,College",185
+Poetry,186
+"Childrens,Picture Books",187
+"Cultural,France",188
+"Classics,Modern Classics",189
+"Literature,Banned Books",190
+Sexuality,191
+Roman,192
+"American,Americana",193
+"Classics,Classic Literature",194
+"Historical,Victorian",195
+"European Literature,French Literature",196
+"War,World War II",197
+Religion,198
+"Religion,Theology",199
+"Cultural,Lebanon",200
+"Adventure,Pirates",201
+"Childrens,Chapter Books",202
+Magical Realism,203
+"European Literature,Spanish Literature",204
+"Cultural,Latin American",205
+Animals,206
+"Historical,Regency",207
+"Romance,Clean Romance",208
+"European Literature,German Literature",209
+Own,210
+"Science Fiction,Aliens",211
+Psychology,212
+Sociology,213
+Cultural,214
+"Mental Health,Mental Illness",215
+"Military History,Civil War",216
+"Politics,Presidents",217
+"American History,American Civil War",218
+New York,219
+"Literature,21st Century",220
+Music,221
+"Cultural,Greece",222
+Modern,223
+"Cultural,Counter Culture",224
+Death,225
+Adult Fiction,226
+"Pseudoscience,Conspiracy Theories",227
+"Culture,Society",228
+"Environment,Peak Oil",229
+"History,Archaeology",230
+"Politics,Political Science",231
+Law,232
+"Sports,Sports",233
+"Romance,Contemporary Romance",234
+"Contemporary Romance,Sports Romance",235
+"Category Romance,Harlequin",236
+"Harlequin,Harlequin Blaze",237
+"Sports,Baseball",238
+"Science Fiction,Dystopia",239
+"Young Adult,High School",240
+"History,Ancient History",241
+"Literature,Ancient",242
+"History,World History",243
+"Mystery,Cozy Mystery",244
+"American,Southern",245
+Suspense,246
+Design,247
+"Design,Website Design",248
+Textbooks,249
+"Art,Photography",250
+"Culture,Pop Culture",251
+"Art,Art Design",252
+"Historical,Georgian",253
+"Fairy Tales,Princesses",254
+"Childrens,Storytime",255
+"Fairy Tales,Fractured Fairy Tales",256
+"Religion,Buddhism",257
+"Buddhism,Zen",258
+Architecture,259
+"Business,Amazon",260
+"History,Medieval History",261
+"Religion,Islam",262
+"Health,Nutrition",263
+"Sports,Fitness",264
+"Parenting,Adoption",265
+"Science Fiction,Alternate History",266
+"Literature,Jewish",267
+"Literature,Latin American Literature",268
+Nobel Prize,269
+"Science,Mathematics",270
+"Reference,Guidebook",271
+"Business,Management",272
+"Science Fiction,Cyberpunk",273
+"War,Terrorism",274
+"Academic,Students",275
+Hugo Awards,276
+"Sports and Games,Games",277
+"Games,Gaming",278
+"Games,Chess",279
+"Games,Game Design",280
+"Design,Usability",281
+"Christianity,Catholic",282
+"Sequential Art,Manga",283
+"Sequential Art,Graphic Novels",284
+"Sequential Art,Comics",285
+"Manga,Shonen",286
+Action,287
+Comics Manga,288
+"Cultural,Italy",289
+"Literature,English Literature",290
+Relationships,291
+"Self Help,Personal Development",292
+Love,293
+"Northern Africa,Egypt",294
+"Cultural,Japan",295
+"Asian Literature,Japanese Literature",296
+"Finance,Personal Finance",297
+"Business,Entrepreneurship",298
+"LGBT,Queer",299
+Gender,300
+"LGBT,Transgender",301
+"Gender,Gender Studies",302
+"GLBT,Queer Studies",303
+"Queer,Queer Lit",304
+"Military History,American Revolution",305
+"American Revolution,American Revolutionary War",306
+"Music,Musicals",307
+"Cultural,China",308
+"Literature,Asian Literature",309
+"Thriller,Legal Thriller",310
+"Cities,Urban Planning",311
+"Geography,Cities",312
+"Food and Drink,Diets",313
+"Food and Drink,Cooking",314
+Buisness,315
+Kids,316
+"Childrens,1st Grade",317
+New Adult,318
+"European Literature,Italian Literature",319
+"Food and Drink,Foodie",320
+"Food and Drink,Culinary",321
+"Alcohol,Wine",322
+"Thriller,Spy Thriller",323
+"Health,Mental Health",324
+Marriage,325
+"Historical Fiction,Prehistoric",326
+Games,327
+Activities,328
+"Fantasy,Dragons",329
+"Historical Fiction,Historical Fantasy",330
+"Fantasy,Mythology",331
+"Humanities,Classical Studies",332
+"Philosophy,Theory",333
+Academic,334
+"Mythology,Greek Mythology",335
+"Academic,Academics",336
+Tragedy,337
+"Literature,African Literature",338
+Athens (Greece),339
+"Neurodiversity,Autistic Spectrum Disorder",340
+"Superheroes,Dc Comics",341
+Westerns,342
+"LGBT,Gay",343
+"Romance,M M Romance",344
+Political Science,345
+"Church,Church History",346
+"Reference,Research",347
+Humanities,348
+Gender and Sexuality,349
+Occult,350
+"Spirituality,New Age",351
+"Philosophy,Metaphysics",352
+"Nature,Outdoors",353
+"Romance,Romantic Suspense",354
+"Social Issues,Poverty",355
+Social Issues,356
+"Media Tie In,Tv",357
+"Religion,Cults",358
+"Sports,Mountaineering",359
+"Mountaineering,Climbing",360
+"Young Adult,Teen",361
+"Science,Biology",362
+"Biology,Evolution",363
+"Novels,Light Novel",364
+"Religion,Atheism",365
+"Philosophy,Skepticism",366
+"Biology,Neuroscience",367
+"Neuroscience,Brain",368
+Artificial Intelligence,369
+"Media Tie In,Star Trek",370
+"Linguistics,Semiotics",371
+"Diary,Journal",372
+Diary,373
+Fitness,374
+"Environment,Climate Change",375
+"Biology,Ecology",376
+"Environment,Sustainability",377
+Christian Fiction,378
+"Food and Drink,Tea",379
+"Presidents,Us Presidents",380
+"Psychology,Counselling",381
+"Language,Communication",382
+"Sports,Cycling",383
+"Gothic,Southern Gothic",384
+"Mystery,Murder Mystery",385
+Female Authors,386
+Disability,387
+"Horror,Ghost Stories",388
+"Paranormal,Ghosts",389
+"Animals,Cats",390
+United States,391
+"Cultural,Canada",392
+"Paranormal,Witches",393
+"Cultural,International",394
+"Western Africa,Nigeria",395
+"Religion,Church",396
+"Cultural,Portugal",397
+"European Literature,Portuguese Literature",398
+"Philosophy,Eastern Philosophy",399
+"Art,Art History",400
+"Art,Visual Art",401
+"History,European History",402
+"Literature,18th Century",403
+Canon,404
+"Middle English Li...,Geoffrey Chaucer",405
+"History,Microhistory",406
+"History,Food History",407
+"Sports,Basketball",408
+"Psychology,Growth Mindset",409
+"Sociology,Abuse",410
+True Story,411
+"Family Law,Fostering",412
+"Pop Culture,Geek",413
+"Culture,Cultural Studies",414
+"Race,Ethnic Studies",415
+"Art,Woodwork",416
+"Holiday,Christmas",417
+"Cultural,Germany",418
+India,419
+"European Literature,Romanian Literature",420
+"Cultural,Romania",421
+"Role Playing Games,Dungeons and Dragons",422
+"Dungeons and Dragons,Forgotten Realms",423
+"Fantasy,Dark Fantasy",424
+"Cultural,Holland",425
+Autobiography,426
+"Media Tie In,Anime",427
+Novella,428
+"Animals,Dogs",429
+"Earth,The World",430
+Holiday,431
+"Art,Drawing",432
+"Short Stories,Short Story Collection",433
+"Horticulture,Gardening",434
+"Literature,European Literature",435
+"Historical,Edwardian",436
+"Childrens,School Stories",437
+"Literature,Canadian Literature",438
+"Judaism,Judaica",439
+"Cultural,Spain",440
+"Apocalyptic,Post Apocalyptic",441
+"Social Issues,Class",442
+"American,American Fiction",443
+"Romance,Love Story",444
+"Paranormal,Vampires",445
+"Philosophy,Logic",446
+"Manga,Shojo",447
+"Sequential Art,Komik",448
+"Realistic Fiction,Slice Of Life",449
+Prayer,450
+"Cultural,Scotland",451
+Native Americans,452
+"History,Native American History",453
+"Northern Africa,Algeria",454
+"Cultural,Ukraine",455
+"Animals,Horses",456
+"Western Africa,Liberia",457
+Futuristic,458
+"Romance,M F Romance",459
+"Cities,Urban Studies",460
+"Science,Agriculture",461
+"Environment,Green",462
+"Politics,Government",463
+"Religion,Judaism",464
+"Food and Drink,Food and Wine",465
+"Superheroes,Marvel",466
+"Comics,Superheroes",467
+Graphic Novels Comics,468
+"Comics,Comic Book",469
+Dark,470
+"World War II,Holocaust",471
+"Cities,Urbanism",472
+"Religion,Esoterica",473
+Football,474
+Soccer,475
+"Criticism,Lit Crit",476
+"Music,Rock N Roll",477
+Social,478
+"African Literature,Egyptian Literature",479
+"Young Adult,Young Adult Contemporary",480
+"Lovecraftian,Cthulhu Mythos",481
+Reportage,482
+"History,Prehistory",483
+"Health,Health Care",484
+"Young Adult,Young Adult Science Fiction",485
+"Biology,Genetics",486
+"Academic,Academia",487
+"Reference,Trivia",488
+"Alcohol,Cocktails",489
+"Literature,15th Century",490
+Juvenile Fiction,491
+"Media Tie In,Star Wars",492
+"Psychology,Psychoanalysis",493
+"Number,Counting",494
+"Mathematics,Number",495
+"Mathematics,Division",496
+"Mathematics,Multiplication",497
+"Northern Africa,Sudan",498
+"Dungeons and Dragons,Dragonlance",499
+"Manga,Seinen",500
+"Sequential Art,Bande Dessinée",501
+"Science Fiction,Utopia",502
+"Occult,Mysticism",503
+"Couture,Fashion",504
+Juvenile Nonfiction,505
+"American,African American Literature",506
+"Family Law,Divorce",507
+"Science Fiction,Apocalyptic",508
+American fiction,509
+"Physics,Quantum Mechanics",510
+"Business,Apple",511
+"Cultural,Israel",512
+Labor,513
+"Social Issues,Social Movements",514
+"Cultural,Brazil",515
+"Literature,Post Colonial",516
+"Eastern Africa,Tanzania",517
+"Eastern Africa,Zambia",518
+"Africa,Eastern Africa",519
+"War,World War I",520
+"Animals,Birds",521
+"Romance,Christian Romance",522
+"Asian Literature,Chinese Literature",523
+Biblical Fiction,524
+Biblical,525
+"Cultural,Denmark",526
+"Science,Chemistry",527
+"Food and Drink,Vegan",528
+"European Literature,Scandinavian Literature",529
+"Travel,Road Trip",530
+Photography,531
+"Thriller,Psychological Thriller",532
+Art and Photography,533
+"Fairy Tales,Fairy Tale Retellings",534
+Homeschool,535
+"Social Issues,Activism",536
+"Christianity,Discipleship",537
+"Paranormal,Demons",538
+Folklore,539
+Folk Tales,540
+"Shapeshifters,Werewolves",541
+"Food and Drink,Vegetarian",542
+"Emergency Services,Police",543
+"LGBT,Lesbian",544
+"Romance,Lesbian Romance",545
+"Romance,Fantasy Romance",546
+"Erotica,Menage",547
+"Erotica,BDSM",548
+"Menage,M M F",549
+"Humor,Comedian",550
+"Animals,Animal Fiction",551
+"Southern Africa,Botswana",552
+"American Civil War,Civil War Western Theater",553
+"American Civil War,Civil War History",554
+"European History,French Revolution",555
+"Sexuality,Sex Work",556
+Pornography,557
+Conservation,558
+"Religion,Paganism",559
+"Cartography,Maps",560
+Anarchism,561
+"Sequential Art,Comix",562
+Sequential Art,563
+"Sequential Art,Graphic Literature",564
+"Cultural,Iran",565
+"European Literature,Czech Literature",566
+"Animals,Dinosaurs",567
+Study Aids,568
+"Sequential Art,Cartoon",569
+"Science Fiction,Climate Change Fiction",570
+"Sequential Art,Comic Strips",571
+"Race,Anti Racist",572
+"Christianity,Lds",573
+"Lds,Lds Fiction",574
+"Lds,Mormonism",575
+Retellings,576
+Bears,577
+"Fairy Tales,Beauty and The Beast",578
+"Games,Video Games",579
+"Religion,Gnosticism",580
+"Young Adult,Young Adult Historical Fiction",581
+Science Nature,582
+"Nature,Plants",583
+"Womens Studies,Feminist Theory",584
+"Sports,Horse Racing",585
+"Plants,Herbs",586
+"Adventure,Maritime",587
+"Historical Romance,Regency Romance",588
+"Food and Drink,Food Writing",589
+"Eastern Africa,Somalia",590
+"Psychology,Emotion",591
+"Social Science,Social Work",592
+Aviation,593
+"Childrens,2nd Grade",594
+"Horror,Zombies",595
+"Food and Drink,Cuisine",596
+"Horror,Bizarro Fiction",597
+"Academic,Grad School",598
+"Banking,Banks",599
+"School Stories,Boarding School",600
+Spiritual life,601
+"Sex Work,Prostitution",602
+Good and evil,603
+"Romance,Western Romance",604
+"Historical Romance,Western Historical Romance",605
+"Holiday,Halloween",606
+"Civil War,Spanish Civil War",607
+"Cultural,Turkish",608
+"Political Science,International Relations",609
+Pulp,610
+"Pulp,Pulp Adventure",611
+"International Rel...,International Development",612
+"Retellings,Adaptations",613
+"Western Africa,Mali",614
+"Music,Punk",615
+"English History,Tudor Period",616
+"Literature,16th Century",617
+"Cultural,Poland",618
+"European Literature,Polish Literature",619
+"Religion,Taoism",620
+"Christianity,Old Testament",621
+"Media Tie In,Doctor Who",622
+Doctors,623
+"Childrens,Pre K",624
+"School,Back To School",625
+"History,Latin American History",626
+The Americas,627
+"Complementary Med...,Traditional Chinese Medicine",628
+"Science,Library Science",629
+"Christianity,Evangelism",630
+"History,Russian History",631
+Dungeons and Dragons (Game),632
+Urban,633
+40k,634
+"Gothic,Gothic Romance",635
+"Mythology,Arthurian",636
+Sports,637
+Recreation,638
+"Eastern Africa,Rwanda",639
+"Lesbian,Lesbian Fiction",640
+"Folklore,Monsters",641
+Polyamory,642
+"Asian Literature,Turkish Literature",643
+Adolescence,644
+Gardening,645
+Sci Fi Fantasy,646
+"Occult,Magick",647
+"Science Fiction,Robots",648
+"Science Fiction,Hard Science Fiction",649
+"Northern Africa,Morocco",650
+"Africa,Northern Africa",651
+Comics,652
+Graphic Novels,653
+"Religion,Scripture",654
+"Cartography,Atlases",655
+"Alcohol,Beer",656
+Witchcraft,657
+"Religion,Wicca",658
+"Occult,Divination",659
+"European Literature,Danish",660
+"Outdoors,Wilderness",661
+"Music,Classical Music",662
+Graphic Novels Manga,663
+"Games,Go",664
+"Manga,Josei",665
+"Manga,Manga Romance",666
+"Fantasy,Heroic Fantasy",667
+"Fantasy,Elves",668
+"Harlequin,Harlequin Desire",669
+"Romance,Category Romance",670
+"Transport,Bicycles",671
+"Manga,Yaoi",672
+"Yaoi,Boys Love",673
+"Cultural,Belgium",674
+"Cultural,Tasmania",675
+"Health,Illness",676
+"Horror,Lovecraftian",677
+"Fantasy,Weird Fiction",678
+"History,Oral History",679
+Amish,680
+"Religion,God",681
+"Social Science,Social Media",682
+Films and filming,683
+"Science Fiction,Sword and Planet",684
+"Occult,Tarot",685
+"Fantasy,Unicorns",686
+"Science Fiction,Virtual Reality",687
+"Medical Professions,Nursing",688
+"Dc Comics,Batman",689
+"Mathematics,Puzzles",690
+"Western Africa,Sierra Leone",691
+"Reference,Field Guides",692
+"Nature,Ornithology",693
+"Pop Culture,Fandom",694
+"Railways,Trains",695
+"Transport,Railways",696
+"Finance,Banking",697
+"Childrens,Young Readers",698
+"Gay,Gay Fiction",699
+Childrens stories,700
+"Horror,Victor Frankenstein",701
+"Heroic Fantasy,Sword and Sorcery",702
+"Medievalism,Romanticism",703
+"Fantasy,Fantasy Of Manners",704
+"Neurodiversity,Adhd",705
+"Mystery,Whodunit",706
+"Mystery,Amateur Sleuth",707
+Literary Collections,708
+"Illness,Disease",709
+"German History,Nazi Party",710
+"Dc Comics,Superman",711
+"Marvel,Spider Man",712
+"Category Romance,Traditional Regency",713
+"Romance,Time Travel Romance",714
+"Science,Earth Sciences",715
+"Crafts,Knitting",716
+"Star Trek,Star Trek Original Series",717
+"Science,Food Science",718
+"Biography,Music Biography",719
+"Weird Fiction,New Weird",720
+"Science,Pseudoscience",721
+Singularity,722
+"Computers,Hackers",723
+"Medicine,Alternative Medicine",724
+Mary Shelley,725
+"Cultural,Bangladesh",726
+"Feminism,Womens Studies",727
+"Russian History,Soviet Union",728
+"Mythology,Gods",729
+"Literature,13th Century",730
+"European Literature,Swedish Literature",731
+"Cultural,Sweden",732
+"Animals,Rabbits",733
+"Dark Fantasy,Goth",734
+"Crafts,Quilting",735
+"Combat,Martial Arts",736
+"Paranormal,Angels",737
+"Archaeology,Egyptology",738
+"Military History,Naval History",739
+Transportation,740
+"Role Playing Games,World Of Darkness",741
+"Romance,Science Fiction Romance",742
+"Category Romance,Silhouette",743
+"Fantasy Of Manners,Mannerpunk",744
+"Astronomy,Planets",745
+"Lesbian,Butch Femme",746
+Authors,747
+European,748
+"Science Fiction,Military Science Fiction",749
+Antiques,750
+Collectibles,751
+"Medicine,Psychiatry",752
+"Historical,Plantagenet",753
+"Reference,Guides",754
+"Short Stories,Flash Fiction",755
+"Folk Tales,Fables",756
+"Emergency Services,Firefighters",757
+"Science Fiction,Near Future",758
+"History,History Of Medicine",759
+"Young Adult,Young Adult Romance",760
+"Harlequin,Harlequin Presents",761
+"Harlequin,Hqn",762
+"Sports,Recreation",763
+"Marvel,X Men",764
+"Archaeology,Material Culture",765
+"LGBT,Genderqueer",766
+Language Arts,767
+Disciplines,768
+Surreal,769
+"Classics,Cult Classics",770
+American literature,771
+"Planets,Earth",772
+"Anthropology,Ethnography",773
+Brothers and sisters,774
+"Yaoi,Shounen Ai",775
+"World Of Warcraft,Warcraft",776
+"Mmorpg,World Of Warcraft",777
+"Religion,Hinduism",778
+Cooking,779
+"Manga,Yuri",780
+Poetry Plays,781
+"Manga,Manhwa",782
+"Fan Fiction,Slash Fiction",783
+Body,784
+Mind,785
+Spirit,786
+"Religion,Goddess",787
+"Travel,Walking",788
+"Christianity,New Testament",789
+"Transport,Trucks",790
+"Finance,Accounting",791
+"Central Africa,Democratic Republic Of The ...",792
+Pets,793
+"Harlequin,Harlequin Romance",794
+"Computer Science,Algorithms",795
+Stone age,796
+"Literature,12th Century",797
+"Beer,Brewing",798
+"Cooking,Food Preservation",799
+Mental health.,800
+"Library Science,Librarianship",801
+"Historical Romance,Medieval Romance",802
+"Animals,Anthropomorphic",803
+"Music,Musicians",804
+"Cultural,Hungary",805
+"Sports,Hockey",806
+"Esoterica,Spiritualism",807
+"Gardening,Horticulture",808
+Minimal brain dysfunction in children,809
+"Health,Physical Therapy",810
+Romantic,811
+Nature,812
+"Social Justice,Social Change",813
+"Category Romance,Loveswept",814
+"Asian Literature,Indonesian Literature",815
+Childrens poetry,816
+Swedish,817
+"Spanish History,Siglo De Oro",818
+"Music,Hip Hop",819
+"Vegetarian,Vegetarianism",820
+"Media Tie In,Buffy The Vampire Slayer",821
+Italian drama,822
+"Star Trek,Star Trek The Next Generation",823
+"Horror,Splatterpunk",824
+"Pseudoscience,Cryptozoology",825
+Futurism,826
+"Northern Africa,Tunisia",827
+Crafts,828
+Hobbies,829
+Sex,830
+"Geology,Palaeontology",831
+"Crafts,Sewing",832
+"Sewing,Dressmaking",833
+"Fantasy,Comic Fantasy",834
+"Comedy,Stand Up",835
+"Fantasy,Low Fantasy",836
+LITERARY CRITICISM,837
+"Pulp,Pulp Noir",838
+"Category Romance,Love Inspired",839
+"Romance,Interracial Romance",840
+"Childrens,Nursery Rhymes",841
+Etiquette,842
+"Romance,African American Romance",843
+"Menage,M F M",844
+"Fairy Tales,Cinderella",845
+"Museology,Museums",846
+"History,Japanese History",847
+"Russian History,Russian Revolution",848
+Computer software,849
+"Food and Drink,Gastronomy",850
+History and Politics,851
+House,852
+Home,853
+"Music,Scores",854
+"Historical,Anglo Saxon",855
+Vietnam War,856
+1961-1975,857
+Chinese Americans,858
+"Scandinavian Lite...,Nordic Noir",859
+"Eastern Africa,Uganda",860
+BIOGRAPHY,861
+AUTOBIOGRAPHY,862
+Wildlife,863
+"Star Trek,Star Trek Voyager",864
+"Science Fiction,Planetary Romance",865
+Warriors,866
+Fantasy fiction,867
+American,868
+"Literature,Black Literature",869
+"Science Fiction,Dying Earth",870
+Nursing,871
+Television,872
+"Military Fiction,Military Romance",873
+"Music,Jazz",874
+"European Literature,Hungarian Literature",875
+"Cultural,Bolivia",876
+"Eastern Africa,Zimbabwe",877
+Frontier and pioneer life,878
+"Horror,Gothic Horror",879
+"Cultural,Pakistan",880
+"European Literature,Dutch Literature",881
+"European Literature,Belgian",882
+"Christianity,Church Ministry",883
+Bibles,884
+Technology,885
+Engineering,886
+"Esoterica,Alchemy",887
+Finance,888
+Personal,889
+Horror tales,890

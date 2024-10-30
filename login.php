@@ -1,3 +1,4 @@
+<?php include 'inc/nav.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,7 +16,7 @@
 
 </head>
 
-<?php include 'inc/nav.php'; ?>
+
 
 <body>
     <br>
