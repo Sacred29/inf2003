@@ -1,48 +1,52 @@
 <?php include 'inc/nav.php'; ?>
 <?php
+require 'vendor/autoload.php';
 require_once __DIR__ . '/config.php';
-
-$conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
 
 // pagination
 echo '<link rel="stylesheet" href="css/pagination.css">';
+
+// Connect to Database
+$client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+$db = $client->eLibDatabase;
+$bookCollection = $db->books;
+
 // Number of records to show per page
 $limit = 14;
 
 // Get the current page number from the query string or default to 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
-$count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM Booklist
-                                   ");
-$row = mysqli_fetch_assoc($count);
-$total_records = $row['total'];
-$total_pages = ceil($total_records / $limit);
+$count = $bookCollection->countDocuments();
+$total_pages = ceil($count / $limit);
 
-function getAllBooksDetails($conn, $limit, $page, $offset)
+function getAllBooksDetails($limit, $offset)
 {
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
-     } else {
-          //prepare statement
-          $stmt = $conn->prepare("SELECT ISBN, bookTitle, publishDate FROM Booklist
-                                   LIMIT $limit OFFSET $offset;");
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               foreach ($result as $row) {
-                    echo "<tr onclick=\"window.location='editBook.php?isbn=" . $row['ISBN'] . "'\">";
-                    echo "<td>" . $row['ISBN'] . "</td>";
-                    echo "<td>" . $row['bookTitle'] . "</td>";
-                    echo "<td>" . $row['publishDate'] . "</td>";
-                    echo "</tr>";
-               }
-          } else {
-               echo "<tr><td colspan='3'>Book List is Empty!</td></tr>";
-          }
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-          $conn->close();
+     // Fetch all books from the database
+     $bookList = $bookCollection->find(
+          [],
+          [
+               'skip' => $offset,
+               'limit' => $limit,
+               'sort' => ['isbn' => 1] // Sort in ascending order by _id
+          ]
+     )->toArray();
+
+     if (count($bookList) > 0) {
+          foreach ($bookList as $book) {
+               echo "<tr onclick=\"window.location='editBook.php?isbn=" . $book['isbn'] . "'\">";
+               echo "<td>" . $book['isbn'] . "</td>";
+               echo "<td>" . $book['title'] . "</td>";
+               echo "<td>" . $book['publication_date']->toDateTime()->format('Y-m-d') . "</td>";
+               echo "</tr>";
+          }
+     } else {
+          echo "<tr><td colspan='3'>Book List is Empty!</td></tr>";
      }
 }
 ?>
@@ -122,7 +126,7 @@ function getAllBooksDetails($conn, $limit, $page, $offset)
                     <th>Book Title</th>
                     <th>Publish Date</th>
                </tr>
-               <?php getAllBooksDetails($conn, $limit, $page, $offset); ?>
+               <?php getAllBooksDetails($limit, $offset); ?>
           </table>
      </div>
 </body>

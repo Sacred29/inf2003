@@ -1,5 +1,6 @@
 <?php
 
+use function MongoDB\is_document;
 use function PHPSTORM_META\type;
 
 session_start();
@@ -45,37 +46,29 @@ function login()
 {
      global $login_email, $login_pwd, $login_error_msg, $success;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $collection = $db->Users;
 
-     //check connection
-     if ($conn->connect_error) {
-          array_push($login_error_msg, "Connection failed: " . $conn->connect_error);
-          $success = false;
-     } else {
-          //prepare statement
-          $stmt = $conn->prepare("SELECT * FROM Users WHERE email=?");
-          $stmt->bind_param("s", $login_email);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               $row = $result->fetch_assoc();
+     // Fetch all books from the database
+     $users = $collection->find(['email' => $login_email])->toArray();
 
-               //verify password
-               if (!password_verify($login_pwd, $row['password'])) {
-                    array_push($login_error_msg, "Invalid email or password!");
-                    $success = false;
-               } else {
-                    $userId = $row['userID'];
-                    $_SESSION['userId'] = $userId;
-                    $_SESSION['type'] = "User";
-                    echo "<script>console.log('Login Successfull!')</script>";
-               }
-          } else {
-               // User not found
+     if (count($users) > 0) {
+          //verify password
+          if (!password_verify($login_pwd, $users[0]['password'])) {
                array_push($login_error_msg, "Invalid email or password!");
                $success = false;
+          } else {
+               $userId = $users[0]['userID'];
+               $_SESSION['userId'] = $userId;
+               $_SESSION['type'] = "User";
+               echo "<script>console.log('Login Successfull!')</script>";
           }
-          $conn->close();
+     } else {
+          // User not found
+          array_push($login_error_msg, "Invalid email or password!");
+          $success = false;
      }
 }
 
@@ -83,37 +76,31 @@ function adminLogin()
 {
      global $login_email, $login_pwd, $login_error_msg, $success;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $collection = $db->Admin;
 
-     //check connection
-     if ($conn->connect_error) {
-          array_push($login_error_msg, "Connection failed: " . $conn->connect_error);
-          $success = false;
-     } else {
-          //prepare statement
-          $stmt = $conn->prepare("SELECT * FROM Admin WHERE email=?");
-          $stmt->bind_param("s", $login_email);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               $row = $result->fetch_assoc();
+     // Fetch all books from the database
+     $admins = $collection->find(['email' => $login_email])->toArray();
 
-               //verify password
-               if (!password_verify($login_pwd, $row['password'])) {
-                    array_push($login_error_msg, "Invalid email or password!");
-                    $success = false;
-               } else {
-                    $userId = $row['adminID'];
-                    $_SESSION['userId'] = $userId;
-                    $_SESSION['type'] = "Admin";
-                    echo "<script>console.log('Login as Admin Successfull!')</script>";
-               }
-          } else {
-               // User not found
+     if (count($admins) > 0) {
+          $row = $admins[0];
+
+          //verify password
+          if (!password_verify($login_pwd, $row['password'])) {
                array_push($login_error_msg, "Invalid email or password!");
                $success = false;
+          } else {
+               $userId = $row['adminID'];
+               $_SESSION['userId'] = $userId;
+               $_SESSION['type'] = "Admin";
+               echo "<script>console.log('Login as Admin Successfull!')</script>";
           }
-          $conn->close();
+     } else {
+          // User not found
+          array_push($login_error_msg, "Invalid email or password!");
+          $success = false;
      }
 }
 

@@ -73,29 +73,33 @@ function register()
 {
      global $fname, $lname, $email, $pwd_hash, $register_error_msg, $success;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $collection = $db->Users;
 
-     if ($conn->connect_error) {
-          array_push($register_error_msg, "Connection failed: " . $conn->connect_error);
-          $success = false;
+     // Fetch all books from the database
+     $users = $collection->find(['email' => $email])->toArray();
+
+     $lastUser = $collection->findOne([], ['sort' => ['_id' => -1]]);
+     if ($lastUser === null) {
+          $userId = 0;
      } else {
-          // Prepare the statement:
-          $stmt = $conn->prepare("
-                         INSERT INTO Users (firstName, lastName, email, password) 
-                         VALUES (?, ?, ?, ?)
-                         ");
-          // Bind & execute the query statement:
-          $stmt->bind_param("ssss", $fname, $lname, $email, $pwd_hash);
-
-          if (!$stmt->execute()) {
-               array_push($register_error_msg, "Execute failed: (" . $stmt->errno . ") " . $stmt->error);
-               $success = false;
-          }
-
-          $stmt->close();
+          $userId = $lastUser['userID'] + 1;
      }
 
-     $conn->close();
+     if (count($users) == 0) {
+          $insertOneUser = $collection->insertOne([
+               'userID' => $userId,
+               'firstName' => $fname,
+               'lastName' => $lname,
+               'email' => $email,
+               'password' => $pwd_hash
+          ]);
+     } else {
+          array_push($register_error_msg, "Email is already registered!");
+          $success = false;
+     }
 }
 
 if ($success) {
