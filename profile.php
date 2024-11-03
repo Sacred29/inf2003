@@ -1,10 +1,10 @@
-<?php include 'inc/nav.php';?>
+<?php include 'inc/nav.php'; ?>
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>Borrowed Book List</title>
+    <title>User Profile</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -29,27 +29,23 @@ function getUserInfo()
 {
     global $userId, $firstname, $lastname, $email;
 
-    $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+    // Connect to Database
+    $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+    $db = $client->eLibDatabase;
+    $userCollection = $db->Users;
 
-    //check connection
-    if ($conn->connect_error) {
-        $errormsg = "Connection Failed";
-        return;
+    $user = $userCollection->findOne(['userID' => (int)$userId]);
+
+    if ($user === null) {
+        $firstname = 'Not Found';
+        $lastname = 'Not Found';
+        $email = 'Not Found';
     } else {
-        //prepare statement
-        $stmt = $conn->prepare("SELECT * FROM Users WHERE userID=?");
-        $stmt->bind_param("s", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $firstname = $row['firstName'];
-            $lastname = $row['lastName'];
-            $email = $row['email'];
-            $_SESSION['pwd'] = $row['password'];
-        }
+        $firstname = $user['firstName'];
+        $lastname = $user['lastName'];
+        $email = $user['email'];
+        $_SESSION['pwd'] = $user['password'];
     }
-    $conn->close();
 }
 
 ?>

@@ -1,8 +1,10 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) {
      session_start();
- }
+}
 require_once __DIR__ . '/config.php';
+
+use MongoDB\BSON\UTCDateTime;
 
 $isbn = $bookTitle = $language = $publisher = $publishDate = "";
 $quantity = $pageCount = 0;
@@ -33,238 +35,47 @@ if (empty($_POST["authorsArray"]) or empty($_POST["genresArray"])) {
      $genres = explode("/", $_POST["genresArray"]);
 }
 
-function insertSelectedBookAuthor($author_values)
-{
-     global $success, $new_book_detail_error_msg;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
-     } else {
-          $insert_query = "INSERT INTO bookAuthor (book_id, author_id) VALUES " . $author_values;
-          $stmt = $conn->prepare($insert_query);
-          if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
-               $success = false;
-          }
-
-          $stmt->close();
-     }
-     $conn->close();
-}
-
-function insertSelectedBookGenre($genre_values)
-{
-     global $success, $new_book_detail_error_msg;
-
-     $insert_query = "INSERT INTO bookGenre (book_id, genre_id) VALUES " . $genre_values;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
-     } else {
-          $insert_query = "INSERT INTO bookGenre (book_id, genre_id) VALUES " . $genre_values;
-          $stmt = $conn->prepare($insert_query);
-          if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
-               $success = false;
-          }
-
-          $stmt->close();
-     }
-     $conn->close();
-}
-
-function getAuthorID($authorName)
-{
-     global $success, $new_book_detail_error_msg;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
-          $stmt->bind_param('s', $authorName);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               $row = $result->fetch_assoc();
-               $authorID = $row['authorID'];
-          } else if ($result->num_rows == 0) {
-               $authorID = addNewAuthor($authorName);
-          } else {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
-               $success = false;
-          }
-
-          $stmt->close();
-     }
-     $conn->close();
-
-     return $authorID;
-}
-
-function addNewAuthor($authorName)
-{
-     global $success, $new_book_detail_error_msg;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
-     } else {
-          $stmt = $conn->prepare("INSERT INTO Authors (authorName) VALUES (?)");
-          $stmt->bind_param('s', $authorName);
-          if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
-               $success = false;
-          } else {
-               $stmt1 = $conn->prepare("SELECT authorID FROM Authors WHERE authorName = ?");
-               $stmt1->bind_param('s', $authorName);
-               $stmt1->execute();
-               $result = $stmt1->get_result();
-               if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
-                    $authorID = $row['authorID'];
-               } else if ($result->num_rows == 0) {
-                    $authorID = -1;
-               } else {
-                    array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt1->errno . ") " .  $stmt1->error);
-                    $success = false;
-               }
-
-               $stmt1->close();
-          }
-
-          $stmt->close();
-     }
-     $conn->close();
-
-     return $authorID;
-}
-
-function getGenreID($genreName)
-{
-     global $genres, $success, $new_book_detail_error_msg;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT genreID FROM Genres WHERE genreName = ?");
-          $stmt->bind_param('s', $genreName);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               $row = $result->fetch_assoc();
-               $genreID = $row['genreID'];
-          } else if ($result->num_rows == 0) {
-               $genreID = -1;
-          } else {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
-               $success = false;
-               $genreID = -1;
-          }
-
-          $stmt->close();
-     }
-     $conn->close();
-
-     return $genreID;
-}
-
 function addNewBookDetails()
 {
-     global $isbn, $bookTitle, $language, $publisher, $publishDate, $quantity, $pageCount, $success, $new_book_detail_error_msg;
+     global $isbn, $bookTitle, $language, $publisher, $publishDate, $quantity, $pageCount, $authors, $genres, $success, $new_book_detail_error_msg;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     $publicationDate = new UTCDateTime((new DateTime($publishDate))->getTimestamp() * 1000);
 
-     //check connection
-     if ($conn->connect_error) {
-          array_push($new_book_detail_error_msg, "Connection Failed");
-          return;
+     $newBookInfo = [
+          'isbn' => (int)$isbn,
+          'title' => $bookTitle,
+          'publisher' => $publisher,
+          'publication_date' => $publicationDate,
+          'language' => $language,
+          'quantity' => (int)$quantity,
+          'page_count' => (int)$pageCount,
+          'authors' => $authors,
+          'genres' => $genres,
+     ];
+
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
+
+     $books = $bookCollection->find(['isbn' => (int)$isbn])->toArray();
+     if (count($books) > 0) {
+          $success = false;
+          array_push($new_book_detail_error_msg, "Book Exists!");
      } else {
-          $stmt = $conn->prepare("
-                         INSERT INTO Booklist (ISBN, bookTitle, language, publisher, publishDate, quantity, pageCount) 
-                         VALUES (?, ?, ?, ?, ?, ?, ?)
-                         ");
-          $stmt->bind_param('sssssii', $isbn, $bookTitle, $language, $publisher, $publishDate, $quantity, $pageCount);
-          if (!$stmt->execute()) {
-               array_push($new_book_detail_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+          $insertNewBook = $bookCollection->insertOne($newBookInfo);
+
+          // Check if the insert was successful
+          if ($insertNewBook->getInsertedCount() === 0) {
                $success = false;
+               array_push($new_book_detail_error_msg, "Book insertion failed!");
           }
-
-          $stmt->close();
-     }
-     $conn->close();
-}
-
-function insertBookAuthors($insert)
-{
-     global $authors, $isbn, $success, $new_book_detail_error_msg;
-
-     $insert_authors = "";
-
-     foreach ($authors as $author) {
-          $authorID = getAuthorID($author);
-          if ($authorID >= 0) {
-               if ($insert_authors === "") {
-                    $insert_authors = "('" . $isbn . "'," . $authorID . ")";
-               } else {
-                    $insert_authors .= ", ('" . $isbn . "'," . $authorID . ")";
-               }
-          } else {
-               array_push($new_book_detail_error_msg, "Failed to insert Book-Author Entry!");
-               $success = false;
-          }
-     }
-
-     if ($insert === true) {
-          insertSelectedBookAuthor($insert_authors);
      }
 }
 
-function insertBookGenres()
-{
-     global $genres, $isbn, $success, $new_book_detail_error_msg;
-
-     $insert_genres = "";
-
-     foreach ($genres as $genre) {
-          $genreID = getGenreID($genre);
-          if ($genreID >= 0) {
-               if ($insert_genres === "") {
-                    $insert_genres = "('" . $isbn . "'," . $genreID . ")";
-               } else {
-                    $insert_genres .= ", ('" . $isbn . "'," . $genreID . ")";
-               }
-          } else {
-               array_push($new_book_detail_error_msg, "Failed to insert Book-Author Entry!");
-               $success = false;
-          }
-     }
-
-     insertSelectedBookGenre($insert_genres);
-}
 
 if ($success) {
-     insertBookAuthors(false);
      addNewBookDetails();
-     insertBookAuthors(true);
-     insertBookGenres();
 }
 ?>
 

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require 'vendor/autoload.php';
 
 if (!isset($_SESSION)) {
      session_start();
@@ -15,24 +16,16 @@ function getLangOption()
 {
      global $langOptions;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT DISTINCT language FROM Booklist;");
-          $stmt->execute();
-          $result = $stmt->get_result();
+     $uniqueLanguages = $bookCollection->distinct('language');
 
-          if ($result->num_rows > 0) {
-               foreach ($result as $row) {
-                    array_push($langOptions, $row['language']);
-               }
-          } else {
-               echo "<tr><td colspan='3'>Language List is Empty!</td></tr>";
-          }
+     // echo count($uniqueLanguages);
+     if (count($uniqueLanguages) > 0) {
+          $langOptions = is_array($uniqueLanguages) ? $uniqueLanguages : (array)$uniqueLanguages;
      }
 }
 
@@ -40,24 +33,22 @@ function getGenreOption()
 {
      global $genreOptions;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT DISTINCT genreName FROM Genres;");
-          $stmt->execute();
-          $result = $stmt->get_result();
+     // Define the aggregation pipeline
+     $genrePipeline = [
+          ['$unwind' => '$genres'], // Deconstructs the 'language' array
+          ['$group' => ['_id' => '$genres']], // Groups by unique 'language' values
+          ['$sort' => ['_id' => 1]] // Sorts results in ascending order
+     ];
 
-          if ($result->num_rows > 0) {
-               foreach ($result as $row) {
-                    array_push($genreOptions, $row['genreName']);
-               }
-          } else {
-               echo "<tr><td colspan='3'>Genre List is Empty!</td></tr>";
-          }
+     $uniqueGenres = $bookCollection->distinct("genres");
+
+     if (count($uniqueGenres) > 0) {
+          $genreOptions = is_array($uniqueGenres) ? $uniqueGenres : (array)$uniqueGenres;
      }
 }
 
@@ -86,6 +77,7 @@ getGenreOption();
 
 <body>
      <div class="form-wrapper">
+          <br>
           <!-- Book form with border -->
           <div class="form-container">
                <form action="insert_book_process.php" method="POST">

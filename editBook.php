@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require 'vendor/autoload.php';
 
 if (!isset($_SESSION)) {
      session_start();
@@ -12,51 +13,31 @@ $authors = $genres = array();
 
 $langOptions = $genreOptions = array();
 
+$success = true;
+
 function getBookDetails()
 {
      global $isbn, $bookTitle, $language, $publisher, $publishDate, $quantity, $pageCount, $authors, $genres;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
+     $book = $bookCollection->findOne(['isbn' => (int)$isbn]);
+
+     if ($book === null) {
+          $isbn = $isbn . "was not found";
      } else {
-          //prepare statement
-          $stmt = $conn->prepare("SELECT b.ISBN, 
-	                              MAX(b.bookTitle) AS bookTitle, MAX(b.quantity) AS quantity, 
-	                              MAX(b.language) AS language, MAX(b.publisher) AS publisher, 
-	                              MAX(b.publishDate) AS publishDate, MAX(b.pageCount) AS pageCount, 
-                                   GROUP_CONCAT(DISTINCT a.authorName ORDER BY a.authorName SEPARATOR '/') AS authors, 
-                                   GROUP_CONCAT(DISTINCT g.genreName ORDER BY g.genreName SEPARATOR '/') AS genres 
-                                   FROM Booklist b 
-                                   INNER JOIN bookAuthor ba ON b.ISBN = ba.book_id 
-                                   INNER JOIN Authors a ON ba.author_id = a.authorID 
-                                   INNER JOIN bookGenre bg ON b.ISBN = bg.book_id 
-                                   INNER JOIN Genres g ON bg.genre_id = g.genreID 
-                                   WHERE b.ISBN = ? 
-                                   GROUP BY b.ISBN");
-          $stmt->bind_param('s', $isbn);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-               $row = $result->fetch_assoc();
+          $bookTitle = $book['title'];
+          $publishDate = $book['publication_date']->toDateTime()->format('Y-m-d');
+          $publisher = $book['publisher'];
+          $language = $book['language'];
+          $pageCount = $book['page_count'];
+          $quantity = $book['quantity'];
 
-               $bookTitle = $row["bookTitle"];
-               $publishDate = $row["publishDate"];
-               $publisher = $row["publisher"];
-               $language = $row["language"];
-               $pageCount = $row["pageCount"];
-               $quantity = $row["quantity"];
-
-               $authors = explode("/", $row["authors"]);
-               $genres = explode("/", $row["genres"]);
-          } else {
-               echo "<tr><td colspan='3'>Book List is Empty!</td></tr>";
-          }
-
-          $conn->close();
+          $authors = is_array($book['authors']) ? $book['authors'] : (array)$book['authors'];
+          $genres = is_array($book['genres']) ? $book['genres'] : (array)$book['genres'];
      }
 }
 
@@ -64,24 +45,16 @@ function getLangOption()
 {
      global $langOptions;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT DISTINCT language FROM Booklist;");
-          $stmt->execute();
-          $result = $stmt->get_result();
+     $uniqueLanguages = $bookCollection->distinct('language');
 
-          if ($result->num_rows > 0) {
-               foreach ($result as $row) {
-                    array_push($langOptions, $row['language']);
-               }
-          } else {
-               echo "<tr><td colspan='3'>Language List is Empty!</td></tr>";
-          }
+     // echo count($uniqueLanguages);
+     if (count($uniqueLanguages) > 0) {
+          $langOptions = is_array($uniqueLanguages) ? $uniqueLanguages : (array)$uniqueLanguages;
      }
 }
 
@@ -89,24 +62,22 @@ function getGenreOption()
 {
      global $genreOptions;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $bookCollection = $db->books;
 
-     //check connection
-     if ($conn->connect_error) {
-          $errormsg = "Connection Failed";
-          return;
-     } else {
-          $stmt = $conn->prepare("SELECT DISTINCT genreName FROM Genres;");
-          $stmt->execute();
-          $result = $stmt->get_result();
+     // Define the aggregation pipeline
+     $genrePipeline = [
+          ['$unwind' => '$genres'], // Deconstructs the 'language' array
+          ['$group' => ['_id' => '$genres']], // Groups by unique 'language' values
+          ['$sort' => ['_id' => 1]] // Sorts results in ascending order
+     ];
 
-          if ($result->num_rows > 0) {
-               foreach ($result as $row) {
-                    array_push($genreOptions, $row['genreName']);
-               }
-          } else {
-               echo "<tr><td colspan='3'>Genre List is Empty!</td></tr>";
-          }
+     $uniqueGenres = $bookCollection->distinct("genres");
+
+     if (count($uniqueGenres) > 0) {
+          $genreOptions = is_array($uniqueGenres) ? $uniqueGenres : (array)$uniqueGenres;
      }
 }
 

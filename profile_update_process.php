@@ -9,6 +9,7 @@ require_once __DIR__ . '/config.php';
 $profile_fname = $profile_lname = $profile_email = $new_pwd = $new_pwd_hash = "";
 $update_profile_error_msg = array();
 $success = true;
+$profile_id = $_SESSION['userId'];
 
 // Helper function that checks input for malicious or unwanted content.
 function sanitize_input($data)
@@ -77,58 +78,42 @@ if (!empty($_POST["new_password"]) && empty($_POST["confirm_new_password"])) {
      }
 }
 
-function checkEmailExist()
-{
-     global $profile_email, $update_profile_error_msg, $success;
-
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
-
-     //check connection
-     if ($conn->connect_error) {
-          array_push($update_profile_error_msg, "Connection failed: " . $conn->connect_error);
-          $success = false;
-     } else {
-          $stmt = $conn->prepare("SELECT * FROM Users where email=?");
-          $stmt->bind_param("s", $profile_email);
-          $stmt->execute();
-          $result = $stmt->get_result();
-
-          if ($result->num_rows > 0) {
-               array_push($update_profile_error_msg, "Email is already in used!");
-               $success = false;
-          }
-     }
-}
-
 function updateProfile()
 {
-     global $profile_fname, $profile_lname, $profile_email, $new_pwd_hash, $update_profile_error_msg, $success;
+     global $profile_id, $profile_fname, $profile_lname, $profile_email, $new_pwd_hash, $update_profile_error_msg, $success;
 
-     $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+     $editedUserInfo = [
+          'firstName' => $profile_fname,
+          'lastName' => $profile_lname,
+          'email' => $profile_email,
+          'password' => $new_pwd_hash,
+     ];
 
-     //check connection
-     if ($conn->connect_error) {
-          array_push($update_profile_error_msg, "Connection failed: " . $conn->connect_error);
+     // Connect to Database
+     $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+     $db = $client->eLibDatabase;
+     $userCollection = $db->Users;
+
+     // Fetch all books from the database
+     $users = $userCollection->find(['email' => $profile_email])->toArray();
+     if (count($users) > 0 && $users[0]['userID'] != $profile_id) {
+          array_push($update_profile_error_msg, "Email is already registered!");
           $success = false;
      } else {
-          $stmt = $conn->prepare("
-                         UPDATE Users 
-                         SET firstName = ?, lastName = ?, email = ?, password = ? 
-                         WHERE userID = ?
-                         ");
-          $stmt->bind_param("ssssi", $profile_fname, $profile_lname, $profile_email, $new_pwd_hash, $_SESSION['userId']);
-          $stmt->execute();
-          if (!$stmt->execute()) {
-               array_push($register_error_msg, "Execute failed: (" . $stmt->errno . ") " .  $stmt->error);
+          // Perform the update
+          $updateResult = $userCollection->updateOne(
+               ['userID' => (int)$profile_id],           // Filter: Find document by ISBN
+               ['$set' => $editedUserInfo]       // Update operation: Set new values
+          );
+
+          // Check if the update was successful
+          if ($updateResult->getMatchedCount() === 0) {
+               array_push($update_profile_error_msg, "User Update Failed!");
                $success = false;
           }
-
-          $stmt->close();
      }
-     $conn->close();
 }
 
-checkEmailExist();
 if ($success) {
      updateProfile();
 }
