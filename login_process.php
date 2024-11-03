@@ -49,10 +49,10 @@ function login()
      // Connect to Database
      $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
      $db = $client->eLibDatabase;
-     $collection = $db->Users;
+     $userCollection = $db->Users;
 
      // Fetch all books from the database
-     $users = $collection->find(['email' => $login_email])->toArray();
+     $users = $userCollection->find(['email' => $login_email])->toArray();
 
      if (count($users) > 0) {
           //verify password
@@ -79,10 +79,10 @@ function adminLogin()
      // Connect to Database
      $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
      $db = $client->eLibDatabase;
-     $collection = $db->Admin;
+     $userCollection = $db->Admin;
 
      // Fetch all books from the database
-     $admins = $collection->find(['email' => $login_email])->toArray();
+     $admins = $userCollection->find(['email' => $login_email])->toArray();
 
      if (count($admins) > 0) {
           $row = $admins[0];

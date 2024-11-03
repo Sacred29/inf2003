@@ -76,29 +76,35 @@ function register()
      // Connect to Database
      $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
      $db = $client->eLibDatabase;
-     $collection = $db->Users;
+     $userCollection = $db->Users;
 
-     // Fetch all books from the database
-     $users = $collection->find(['email' => $email])->toArray();
-
-     $lastUser = $collection->findOne([], ['sort' => ['_id' => -1]]);
+     $lastUser = $userCollection->findOne([], ['sort' => ['_id' => -1]]);
      if ($lastUser === null) {
           $userId = 0;
      } else {
           $userId = $lastUser['userID'] + 1;
      }
 
-     if (count($users) == 0) {
-          $insertOneUser = $collection->insertOne([
+     // Fetch all books from the database
+     $users = $userCollection->find(['email' => $email])->toArray();
+
+     if (count($users) > 0) {
+          array_push($register_error_msg, "Email is already registered!");
+          $success = false;
+     } else {
+          $insertNewUser = $userCollection->insertOne([
                'userID' => $userId,
                'firstName' => $fname,
                'lastName' => $lname,
                'email' => $email,
                'password' => $pwd_hash
           ]);
-     } else {
-          array_push($register_error_msg, "Email is already registered!");
-          $success = false;
+
+          // Check if the insert was successful
+          if (!($insertNewUser->getInsertedCount() === 0)) {
+               $success = false;
+               array_push($register_error_msg, "User registration failed!");
+          }
      }
 }
 
