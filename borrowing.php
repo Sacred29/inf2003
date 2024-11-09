@@ -47,49 +47,79 @@ session_start();
             {
                 global $userId;
 
+                $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+                $db = $client->eLibDatabase;
+                $borrowedCollection = $db->Borrowed;
+                $booklistCollection = $db->booklist;
+                $date = date("Y-m-d");
 
-                $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+                //update first
+                $expiredRecords = $borrowedCollection->aggregate([
+                    ['$match' => [
+                        'userID' => $userId,
+                        'expiryDate' => ['$lt' => $date],
+                        'status' => 'Borrowed'
+                    ]],
+                    ['$lookup' => [
+                        'from' => 'booklist',           // The collection to join
+                        'localField' => 'ISBN',          // Field in `borrowed` to match
+                        'foreignField' => 'ISBN',        // Field in `booklist` to match
+                        'as' => 'bookDetails'            // Output array field
+                    ]],
+                    ['$unwind' => '$bookDetails'],       // Flatten the joined array
+                ]);
 
-                //check connection
-                if ($conn->connect_error) {
-                    $errormsg = "Connection Failed";
-                    return;
-                } else {
+                // Step 2: Process each record and update fields in borrowed and booklist
+                foreach ($expiredRecords as $record) {
+                    // Update the status in borrowed collection
+                    $borrowedCollection->updateOne(
+                        ['_id' => $record['_id']],
+                        ['$set' => ['status' => 'Returned']]
+                    );
 
-                    //update expired
-                    $stmt = $conn->prepare("UPDATE Borrowed INNER JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN set quantity = quantity+1, status = 'Returned' where userID=? AND expiryDate < ? AND status ='Borrowed'");
-                    $date = date("Y-m-d");
-                    $stmt->bind_param("ss", $userId, $date);
-                    $stmt->execute();
+                    // Increase the quantity in booklist collection
+                    $borrowedCollection->updateOne(
+                        ['ISBN' => $record['ISBN']],
+                        ['$inc' => ['quantity' => 1]]
+                    );
+                }
 
-                    //get all records of borrowed from user
-                    $stmt = $conn->prepare("SELECT * FROM Borrowed INNER JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN where userID=? order by expiryDate desc");
-                    $stmt->bind_param("s", $userId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    foreach ($result as $row) {
-                        $borrowedID = $row['borrowID'];
-                        $bookID = $row['ISBN'];
-                        $bookTitle = $row['bookTitle'];
-                        $borrowedDate = $row['borrowedDate'];
-                        $expiryDate = $row['expiryDate'];
-                        $status = $row['status'];
+                //show borrowed collection
+                $borrowedRecords = $borrowedCollection->aggregate([
+                        ['$match' => ['userID' => $userId]],
+                        ['$lookup' => [
+                            'from' => 'booklist',           // The collection to join
+                            'localField' => 'ISBN',          // Field in `borrowed` to match
+                            'foreignField' => 'ISBN',        // Field in `booklist` to match
+                            'as' => 'bookDetails'            // Output array field
+                        ]],
+                        ['$unwind' => '$bookDetails'],       // Flatten the joined array
+                        ['$sort' => ['expiryDate' => -1]]    // Sort by expiryDate in descending order
+                    ]);
 
-                        echo "<tr>";
-                        echo "<td>" . $borrowedID . "</td>";
-                        echo "<td>" . $bookID . "</td>";
-                        echo "<td>" . $bookTitle . "</td>";
-                        echo "<td>" . $borrowedDate . "</td>";
-                        echo "<td>" . $expiryDate . "</td>";
-                        echo "<td>" . $status . "</td>";
-                        echo "</tr>";
-                    }
-                    $conn->close();
+                // Step 4: Display results
+                foreach ($borrowedRecords as $row) {
+                    $borrowedID = $row['borrowID'];
+                    $bookID = $row['ISBN'];
+                    $bookTitle = $row['bookDetails']['bookTitle'];
+                    $borrowedDate = $row['borrowedDate'];
+                    $expiryDate = $row['expiryDate'];
+                    $status = $row['status'];
+
+                    echo "<tr>";
+                    echo "<td>" . $borrowedID . "</td>";
+                    echo "<td>" . $bookID . "</td>";
+                    echo "<td>" . $bookTitle . "</td>";
+                    echo "<td>" . $borrowedDate . "</td>";
+                    echo "<td>" . $expiryDate . "</td>";
+                    echo "<td>" . $status . "</td>";
+                    echo "</tr>";
                 }
             }
 
             ?>
         </table>
+        <br>
     </div>
 
 </body>
