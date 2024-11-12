@@ -61,9 +61,9 @@ session_start();
                         'status' => 'Borrowed'
                     ]],
                     ['$lookup' => [
-                        'from' => 'booklist',           // The collection to join
-                        'localField' => 'ISBN',          // Field in `borrowed` to match
-                        'foreignField' => 'ISBN',        // Field in `booklist` to match
+                        'from' => 'books',           // The collection to join
+                        'localField' => 'isbn',          // Field in `borrowed` to match
+                        'foreignField' => 'isbn',        // Field in `booklist` to match
                         'as' => 'bookDetails'            // Output array field
                     ]],
                     ['$unwind' => '$bookDetails'],       // Flatten the joined array
@@ -79,7 +79,7 @@ session_start();
 
                     // Increase the quantity in booklist collection
                     $borrowedCollection->updateOne(
-                        ['ISBN' => $record['ISBN']],
+                        ['isbn' => $record['isbn']],
                         ['$inc' => ['quantity' => 1]]
                     );
                 }
@@ -88,9 +88,9 @@ session_start();
                 $borrowedRecords = $borrowedCollection->aggregate([
                         ['$match' => ['userID' => $userId]],
                         ['$lookup' => [
-                            'from' => 'booklist',           // The collection to join
-                            'localField' => 'ISBN',          // Field in `borrowed` to match
-                            'foreignField' => 'ISBN',        // Field in `booklist` to match
+                            'from' => 'books',           // The collection to join
+                            'localField' => 'isbn',          // Field in `borrowed` to match
+                            'foreignField' => 'isbn',        // Field in `booklist` to match
                             'as' => 'bookDetails'            // Output array field
                         ]],
                         ['$unwind' => '$bookDetails'],       // Flatten the joined array
@@ -100,7 +100,7 @@ session_start();
                 // Step 4: Display results
                 foreach ($borrowedRecords as $row) {
                     $borrowedID = $row['borrowID'];
-                    $bookID = $row['ISBN'];
+                    $bookID = $row['isbn'];
                     $bookTitle = $row['bookDetails']['bookTitle'];
                     $borrowedDate = $row['borrowedDate'];
                     $expiryDate = $row['expiryDate'];
