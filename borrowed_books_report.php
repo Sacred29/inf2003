@@ -1,4 +1,9 @@
 <?php include 'inc/nav.php'; ?>
+<?php require 'vendor/autoload.php';
+
+use MongoDB\BSON\UTCDateTime;
+use MongoDB\Client;
+?>
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +26,7 @@
 
 
     <?php
-    
+
 
     //if not admin send to index.php
     if (isset($_SESSION['type'])) {
@@ -52,45 +57,85 @@
 
             function getTotalBorrowedList()
             {
+
                 global $userId;
 
 
-                $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+                // $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+                $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+                $db = $client->eLibDatabase;
+                $borrowedCollection = $db->Borrowed;
+                $booklistCollection = $db->books;
+                $currentMonth = date('m');
+                $currentYear = date('Y');
 
-                //check connection
-                if ($conn->connect_error) {
-                    $errormsg = "Connection Failed";
-                    return;
-                } else {
+                // Calculate the start and end of the current month as MongoDB UTCDateTime objects
+                $startDate = new UTCDateTime(strtotime("$currentYear-$currentMonth-01 00:00:00") * 1000);
+                $endDate = new UTCDateTime(strtotime("$currentYear-" . ($currentMonth + 1) . "-01 00:00:00") * 1000);
 
-                    //prepare statement
-                    $stmt = $conn->prepare("SELECT Borrowed.ISBN, Booklist.bookTitle, COUNT(*) AS totalBorrowed
-                                                    FROM Borrowed
-                                                    JOIN Booklist ON Borrowed.ISBN = Booklist.ISBN
-                                                    WHERE MONTH(Borrowed.borrowedDate) = MONTH(CURRENT_DATE())
-                                                    AND YEAR(Borrowed.borrowedDate) = YEAR(CURRENT_DATE())
-                                                    GROUP BY Borrowed.ISBN, Booklist.bookTitle
-                                                    ORDER BY totalBorrowed DESC;");
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result->num_rows > 0) {
-                        foreach ($result as $row) {
-                            $bookID = $row['ISBN'];
-                            $bookTitle = $row['bookTitle'];
-                            $totalBorrowed = $row['totalBorrowed'];
+                echo "Start Date: " . $startDate->__toString() . "<br>";
+                echo "End Date: " . $endDate->__toString() . "<br>";
 
-                            echo "<tr>";
-                            echo "<td>" . $bookID . "</td>";
-                            echo "<td>" . $bookTitle . "</td>";
-                            echo "<td>" . $totalBorrowed . "</td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='3'>No Borrowed Books</td></tr>";
+                $pipeline = [
+                    [
+                        '$match' => [
+                            'borrowedDate' => [
+                                '$gte' => $startDate,
+                                '$lt' => $endDate
+                            ]
+                        ]
+                    ],
+                    [
+                        '$lookup' => [
+                            'from' => 'books',
+                            'localField' => 'ISBN',
+                            'foreignField' => 'isbn',
+                            'as' => 'book' 
+                        ]
+
+                    ],
+                    [
+                        '$unwind' => '$book' // Unwind the joined data
+                    ],
+                    [
+                        '$group' => [
+                            '_id' => [
+                                'ISBN' => '$ISBN',
+                                'bookTitle' => '$book.title'
+                            ],
+                            'totalBorrowed' => ['$sum' => 1]
+                        ]
+                    ],
+
+                    [
+                        '$sort' => [
+                            'totalBorrowed' => -1
+                        ]
+                    ]
+                ];
+
+                
+                $result = $borrowedCollection->aggregate($pipeline);
+                // var_dump(iterator_to_array($result));
+                $resultArray = iterator_to_array($result);
+
+                if (count($resultArray) > 0) {
+                    foreach ($resultArray as $row) {
+                        // print_r($row); // Debug output
+                        $bookID = $row['_id']['ISBN'];
+                        $bookTitle = $row['_id']['bookTitle'];
+                        $totalBorrowed = $row['totalBorrowed'];
+
+                        echo "<tr>";
+                        echo "<td>" . $bookID . "</td>";
+                        echo "<td>" . $bookTitle . "</td>";
+                        echo "<td>" . $totalBorrowed . "</td>";
+                        echo "</tr>";
                     }
-
-                    $conn->close();
+                } else {
+                    echo "<tr><td colspan='3'>No Borrowed Books</td></tr>";
                 }
+
             }
 
             ?>
