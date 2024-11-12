@@ -50,7 +50,6 @@ session_start();
                 $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
                 $db = $client->eLibDatabase;
                 $borrowedCollection = $db->Borrowed;
-                $booklistCollection = $db->booklist;
                 $date = date("Y-m-d");
 
                 //update first
@@ -62,7 +61,7 @@ session_start();
                     ]],
                     ['$lookup' => [
                         'from' => 'books',           // The collection to join
-                        'localField' => 'isbn',          // Field in `borrowed` to match
+                        'localField' => 'ISBN',          // Field in `borrowed` to match
                         'foreignField' => 'isbn',        // Field in `booklist` to match
                         'as' => 'bookDetails'            // Output array field
                     ]],
@@ -89,7 +88,7 @@ session_start();
                         ['$match' => ['userID' => $userId]],
                         ['$lookup' => [
                             'from' => 'books',           // The collection to join
-                            'localField' => 'isbn',          // Field in `borrowed` to match
+                            'localField' => 'ISBN',          // Field in `borrowed` to match
                             'foreignField' => 'isbn',        // Field in `booklist` to match
                             'as' => 'bookDetails'            // Output array field
                         ]],
@@ -100,8 +99,8 @@ session_start();
                 // Step 4: Display results
                 foreach ($borrowedRecords as $row) {
                     $borrowedID = $row['borrowID'];
-                    $bookID = $row['isbn'];
-                    $bookTitle = $row['bookDetails']['bookTitle'];
+                    $bookID = $row['ISBN'];
+                    $bookTitle = $row['bookDetails']['title'];
                     $borrowedDate = $row['borrowedDate'];
                     $expiryDate = $row['expiryDate'];
                     $status = $row['status'];
