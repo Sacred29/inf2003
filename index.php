@@ -2,8 +2,9 @@
 session_start();
 require 'vendor/autoload.php';
 
-// pagination
+// pagination and styling
 echo '<link rel="stylesheet" href="css/pagination.css">';
+echo '<link rel="stylesheet" href="css/searchbar.css">';
 
 // Connect to Database
 $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
@@ -12,20 +13,40 @@ $bookCollection = $db->books;
 
 // Number of records to show per page
 $limit = 14;
-
-// Get the current page number from the query string or default to 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
-$count = $bookCollection->countDocuments();
+
+// Search parameters
+$searchType = isset($_GET['searchType']) ? $_GET['searchType'] : 'title';
+$searchText = isset($_GET['search']) ? $_GET['search'] : '';
+
+// Build the search query
+$filter = [];
+if (!empty($searchText)) {
+    switch ($searchType) {
+        case 'author':
+            $filter['authors'] = new MongoDB\BSON\Regex("^$searchText", 'i');
+            break;
+        case 'genre':
+            $filter['genres'] = new MongoDB\BSON\Regex("^$searchText", 'i');
+            break;
+        default:
+            $filter['title'] = new MongoDB\BSON\Regex("^$searchText", 'i');
+            break;
+    }
+}
+
+// Count documents and calculate total pages
+$count = $bookCollection->countDocuments($filter);
 $total_pages = ceil($count / $limit);
 
-// Fetch all books from the database
+// Fetch books based on the filter
 $bookList = $bookCollection->find(
-    [],
+    $filter,
     [
         'skip' => $offset,
         'limit' => $limit,
-        'sort' => ['isbn' => 1] // Sort in ascending order by _id
+        'sort' => ['isbn' => 1]
     ]
 )->toArray();
 ?>
@@ -42,49 +63,61 @@ $bookList = $bookCollection->find(
 
     <h1>Book List</h1>
 
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form method="get" action="index.php">
+            <input type="text" id="search" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($searchText); ?>" autocomplete="off">
+            <div>
+                <input type="radio" id="by-title" name="searchType" value="title" <?php echo $searchType === 'title' ? 'checked' : ''; ?>>
+                <label for="by-title">Title</label>
+
+                <input type="radio" id="by-author" name="searchType" value="author" <?php echo $searchType === 'author' ? 'checked' : ''; ?>>
+                <label for="by-author">Author</label>
+
+                <input type="radio" id="by-genre" name="searchType" value="genre" <?php echo $searchType === 'genre' ? 'checked' : ''; ?>>
+                <label for="by-genre">Genre</label>
+            </div>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
     <div class="w3-container">
         <!-- Pagination -->
         <?php
-        // Pagination logic
-        $adjacents = 2; // Number of adjacent pages to show
+        $adjacents = 2;
         $start = ($page > $adjacents) ? $page - $adjacents : 1;
         $end = ($page < $total_pages - $adjacents) ? $page + $adjacents : $total_pages;
 
         echo "<div class='pagination'>";
 
-        // Previous button
         if ($page > 1) {
-            echo "<a href='?page=" . ($page - 1) . "' class='prev-next'>&laquo;</a>";
+            echo "<a href='?page=" . ($page - 1) . "&search=$searchText&searchType=$searchType' class='prev-next'>&laquo;</a>";
         }
 
-        // First page link if not in the range
         if ($start > 1) {
-            echo "<a href='?page=1'>1</a>";
+            echo "<a href='?page=1&search=$searchText&searchType=$searchType'>1</a>";
             if ($start > 2) {
-                echo "<span>...</span>"; // Ellipsis for skipped pages
+                echo "<span>...</span>";
             }
         }
 
-        // Page number links
         for ($i = $start; $i <= $end; $i++) {
             if ($i == $page) {
-                echo "<strong>$i</strong>"; // Highlight current page
+                echo "<strong>$i</strong>";
             } else {
-                echo "<a href='?page=$i'>$i</a>";
+                echo "<a href='?page=$i&search=$searchText&searchType=$searchType'>$i</a>";
             }
         }
 
-        // Last page link if not in the range
         if ($end < $total_pages) {
             if ($end < $total_pages - 1) {
-                echo "<span>...</span>"; // Ellipsis for skipped pages
+                echo "<span>...</span>";
             }
-            echo "<a href='?page=$total_pages'>$total_pages</a>";
+            echo "<a href='?page=$total_pages&search=$searchText&searchType=$searchType'>$total_pages</a>";
         }
 
-        // Next button
         if ($page < $total_pages) {
-            echo "<a href='?page=" . ($page + 1) . "' class='prev-next'>&raquo;</a>";
+            echo "<a href='?page=" . ($page + 1) . "&search=$searchText&searchType=$searchType' class='prev-next'>&raquo;</a>";
         }
 
         echo "</div>";
@@ -129,6 +162,7 @@ $bookList = $bookCollection->find(
     </div>
 
     <script src="js/gallery.js"></script>
+
 
     <form id="borrowForm" style="display: none;" method="post">
         <input type="text" id="form-isbn" name="form-isbn">
