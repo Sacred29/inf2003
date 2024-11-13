@@ -84,6 +84,7 @@ session_start();
                 }
 
                 //show borrowed collection
+                $borrowedCollection = $db->Borrowed;
                 $borrowedRecords = $borrowedCollection->aggregate([
                         ['$match' => ['userID' => $userId]],
                         ['$lookup' => [
