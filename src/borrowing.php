@@ -47,8 +47,8 @@ session_start();
             {
                 global $userId;
 
-                $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
-                $db = $client->eLibDatabase;
+                $mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongodb:27017';
+                $client = new MongoDB\Client($mongoUri); 
                 $borrowedCollection = $db->Borrowed;
                 $date = date("Y-m-d");
 

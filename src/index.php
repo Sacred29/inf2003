@@ -59,8 +59,6 @@ if (isset($_SESSION['userId'])){
         $formQuantity = $_POST["form-quantity"];
         $formExpiryDate = $_POST["form-expirydate"];
 
-        $mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongodb:27017';
-        $client = new MongoDB\Client($mongoUri); 
         $bookCollection = $db->books;
         $borrowedCollection = $db->Borrowed;
         
