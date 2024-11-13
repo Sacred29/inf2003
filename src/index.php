@@ -7,10 +7,10 @@ echo '<link rel="stylesheet" href="css/pagination.css">';
 echo '<link rel="stylesheet" href="css/searchbar.css">';
 
 // Connect to Database
-$client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+$mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongodb:27017';
+$client = new MongoDB\Client($mongoUri);
 $db = $client->eLibDatabase;
 $bookCollection = $db->books;
-
 // Number of records to show per page
 $limit = 14;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
