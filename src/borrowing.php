@@ -48,8 +48,10 @@ session_start();
                 global $userId;
 
                 $mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongodb:27017';
-                $client = new MongoDB\Client($mongoUri); 
+                $client = new MongoDB\Client($mongoUri);
+                $db = $client->eLibDatabase;  
                 $borrowedCollection = $db->Borrowed;
+                $booklistCollection = $db->books;
                 $date = date("Y-m-d");
 
                 //update first
@@ -77,7 +79,7 @@ session_start();
                     );
 
                     // Increase the quantity in booklist collection
-                    $borrowedCollection->updateOne(
+                    $booklistCollection->updateOne(
                         ['isbn' => $record['isbn']],
                         ['$inc' => ['quantity' => 1]]
                     );
