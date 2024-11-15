@@ -52,7 +52,8 @@ session_start();
                 $db = $client->eLibDatabase;  
                 $borrowedCollection = $db->Borrowed;
                 $booklistCollection = $db->books;
-                $date = date("Y-m-d");
+                // $date = date("Y-m-d");
+                $date = new MongoDB\BSON\UTCDateTime();
 
                 //update first
                 $expiredRecords = $borrowedCollection->aggregate([
@@ -104,8 +105,10 @@ session_start();
                     $borrowedID = $row['borrowID'];
                     $bookID = $row['ISBN'];
                     $bookTitle = $row['bookDetails']['title'];
-                    $borrowedDate = $row['borrowedDate'];
-                    $expiryDate = $row['expiryDate'];
+                    // $borrowedDate = $row['borrowedDate'];
+                    // $expiryDate = $row['expiryDate'];
+                    $borrowedDate = $row['borrowedDate']->toDateTime()->format('Y-m-d');
+                    $expiryDate = $row['expiryDate']->toDateTime()->format('Y-m-d');
                     $status = $row['status'];
 
                     echo "<tr>";

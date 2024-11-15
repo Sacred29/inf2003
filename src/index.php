@@ -59,6 +59,10 @@ if (isset($_SESSION['userId'])){
         $formQuantity = $_POST["form-quantity"];
         $formExpiryDate = $_POST["form-expirydate"];
 
+        // Convert to MongoDB UTCDateTime
+        $borrowedDate = new MongoDB\BSON\UTCDateTime(strtotime($formBorrowDate) * 1000);
+        $expiryDate = new MongoDB\BSON\UTCDateTime(strtotime($formExpiryDate) * 1000);
+
         $bookCollection = $db->books;
         $borrowedCollection = $db->Borrowed;
         
@@ -79,14 +83,12 @@ if (isset($_SESSION['userId'])){
             "borrowID" => $borrowID,
             "ISBN" => (int)$formISBN,
             "userID" => $userID,
-            "borrowedDate" => $formBorrowDate,
-            "expiryDate" => $formExpiryDate,
+            "borrowedDate" => $borrowedDate,
+            "expiryDate" => $expiryDate,
             "status" => "Borrowed",
         ];
         $borrowedCollection->insertOne($document);
     }
-
-
 }
 
 ?>
