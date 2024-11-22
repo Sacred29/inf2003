@@ -49,6 +49,48 @@ $bookList = $bookCollection->find(
         'sort' => ['isbn' => 1]
     ]
 )->toArray();
+
+if (isset($_SESSION['userId'])){
+    $userID = $_SESSION['userId'];
+    $formBorrowDate = $formISBN = $formQuantity = $formExpiryDate = "";
+    if(isset($_POST["form-borrowdate"])){
+        $formBorrowDate = $_POST["form-borrowdate"];
+        $formISBN = $_POST["form-isbn"];
+        $formQuantity = $_POST["form-quantity"];
+        $formExpiryDate = $_POST["form-expirydate"];
+
+        // Convert to MongoDB UTCDateTime
+        $borrowedDate = new MongoDB\BSON\UTCDateTime(strtotime($formBorrowDate) * 1000);
+        $expiryDate = new MongoDB\BSON\UTCDateTime(strtotime($formExpiryDate) * 1000);
+
+        $bookCollection = $db->books;
+        $borrowedCollection = $db->Borrowed;
+        
+        //add update quantity here
+        $filter = ['isbn' => (int)$formISBN];
+        $update = ['$inc' => ['quantity' => -1]];
+        $bookCollection->updateOne($filter, $update);
+
+        //add book to borrowed collection
+        //get highest borrowID first
+        $pipeline = [
+            ['$sort' => ['borrowID' => -1]],
+            ['$limit' => 1]
+        ];
+        $result = $borrowedCollection->aggregate($pipeline)->toArray();
+        $borrowID = $result[0]['borrowID'] + 1;
+        $document = [
+            "borrowID" => $borrowID,
+            "ISBN" => (int)$formISBN,
+            "userID" => $userID,
+            "borrowedDate" => $borrowedDate,
+            "expiryDate" => $expiryDate,
+            "status" => "Borrowed",
+        ];
+        $borrowedCollection->insertOne($document);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -157,6 +199,7 @@ $bookList = $bookCollection->find(
             <p id="overlay-pageCount"></p>
             <p id="overlay-genre"></p>
             <p id="overlay-authors"></p>
+            <p id="overlay-quantity"></p>
             <button id="overlay-borrow-button" onClick="borrow()">Borrow</button>
         </div>
     </div>

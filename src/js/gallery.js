@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("overlay-pageCount").textContent = `Pages: ${book.pageCount}`;
         document.getElementById("overlay-genre").textContent = `Genres: ${book.genres.join(" / ")}`;
         document.getElementById("overlay-authors").textContent = `Authors: ${book.authors.join(", ")}`;
-        document.getElementById("overlay-authors").textContent = `Quantity: ${book.quantity}`;
+        document.getElementById("overlay-quantity").textContent = `Quantity: ${book.quantity}`;
 
         // Show the overlay
         document.getElementById("overlay").style.display = "flex";
@@ -33,11 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
         expirydate.setDate(date.getDate() + 7);
         let formattedBorrow = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
         let formattedExpiry = expirydate.getFullYear() + "-" + (expirydate.getMonth() + 1) + "-" + expirydate.getDate();
+        let globalQuantity = document.getElementById("overlay-quantity").innerText.split(" ")[1];
         document.getElementById("form-borrowdate").value = formattedBorrow;
         document.getElementById("form-expirydate").value = formattedExpiry;
         document.getElementById("form-quantity").value = globalQuantity;
         form.submit();
     }
+    document.getElementById("overlay-borrow-button").addEventListener("click", borrow);
 
 
     // Add click events to each book card

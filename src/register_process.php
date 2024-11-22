@@ -101,7 +101,7 @@ function register()
           ]);
 
           // Check if the insert was successful
-          if (!($insertNewUser->getInsertedCount() === 0)) {
+          if ($insertNewUser->getInsertedId() === null) {
                $success = false;
                array_push($register_error_msg, "User registration failed!");
           }

@@ -1,4 +1,9 @@
 <?php include 'inc/nav.php';?>
+<?php require 'vendor/autoload.php';
+
+use MongoDB\BSON\UTCDateTime;
+use MongoDB\Client;
+?>
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="en">
@@ -52,44 +57,78 @@
             {
                 global $userId;
 
+                $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
+                $db = $client->eLibDatabase;
+                $borrowedCollection = $db->Borrowed;
+                $booklistCollection = $db->books;
+                $currentMonth = date('m');
+                $currentYear = date('Y');
 
-                $conn = new mysqli($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME']);
+                // Calculate the start and end of the current month as MongoDB UTCDateTime objects
+                $startDate = new UTCDateTime(strtotime("$currentYear-$currentMonth-01 00:00:00") * 1000);
+                $endDate = new UTCDateTime(strtotime("$currentYear-" . ($currentMonth + 1) . "-01 00:00:00") * 1000);
 
-                //check connection
-                if ($conn->connect_error) {
-                    $errormsg = "Connection Failed";
-                    return;
-                } else {
+                $pipeline = [
+                    [
+                        '$match' => [
+                            'borrowedDate' => [
+                                '$gte' => $startDate,
+                                '$lt' => $endDate
+                            ]
+                        ]
+                    ],
+                    [
+                        '$lookup' => [
+                            'from' => 'Users',
+                            'localField' => 'userID',
+                            'foreignField' => 'userID',
+                            'as' => 'userDetails' 
+                        ]
 
-                    //prepare statement
-                    $stmt = $conn->prepare("SELECT Users.userID, concat(Users.firstName, ' ', Users.lastName) as borrower, COUNT(*) as booksBorrowed
-                                                    FROM ELibDatabase.Borrowed
-                                                    JOIN ELibDatabase.Users ON Borrowed.userID = Users.userID
-                                                    WHERE MONTH(Borrowed.borrowedDate) = MONTH(CURRENT_DATE())
-                                                    AND YEAR(Borrowed.borrowedDate) = YEAR(CURRENT_DATE())
-                                                    GROUP BY Borrowed.userID, Users.userID
-                                                    ORDER BY booksBorrowed DESC
-                                                    LIMIT 5;");
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result->num_rows > 0) {
-                        foreach ($result as $row) {
-                            $userID = $row['userID'];
-                            $userName = $row['borrower'];
-                            $totalBorrowed = $row['booksBorrowed'];
+                    ],
+                    [
+                        '$unwind' => '$userDetails'
+                    ],
+                    [
+                        '$group' => [
+                            '_id' => [
+                                'userID' => '$userID',
+                                'borrowerName' => ['$concat' => ['$userDetails.firstName', ' ', '$userDetails.lastName']]
+                            ],
+                            'totalBorrowed' => ['$sum' => 1]
+                        ]
+                    ],
 
-                            echo "<tr>";
-                            echo "<td>" . $userID . "</td>";
-                            echo "<td>" . $userName . "</td>";
-                            echo "<td>" . $totalBorrowed . "</td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='3'>No Borrowed Books</td></tr>";
-                    }
+                    [
+                        '$sort' => [
+                            'totalBorrowed' => -1
+                        ]
+                    ],
+                    [
+                        '$limit' => 5
+                    ]
+                ];
 
-                    $conn->close();
-                }
+                // Execute the pipeline
+    $result = $borrowedCollection->aggregate($pipeline);
+    $resultArray = iterator_to_array($result);
+
+    // Display the results
+    if (count($resultArray) > 0) {
+        foreach ($resultArray as $row) {
+            $userID = $row['_id']['userID'];
+            $borrowerName = $row['_id']['borrowerName'];
+            $totalBorrowed = $row['totalBorrowed'];
+
+            echo "<tr>";
+            echo "<td>" . $userID . "</td>";
+            echo "<td>" . $borrowerName . "</td>";
+            echo "<td>" . $totalBorrowed . "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='3'>No Borrowed Books</td></tr>";
+    }
             }
 
             ?>

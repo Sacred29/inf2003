@@ -73,8 +73,8 @@ use MongoDB\Client;
                 $startDate = new UTCDateTime(strtotime("$currentYear-$currentMonth-01 00:00:00") * 1000);
                 $endDate = new UTCDateTime(strtotime("$currentYear-" . ($currentMonth + 1) . "-01 00:00:00") * 1000);
 
-                echo "Start Date: " . $startDate->__toString() . "<br>";
-                echo "End Date: " . $endDate->__toString() . "<br>";
+                // echo "Start Date: " . $startDate->__toString() . "<br>";
+                // echo "End Date: " . $endDate->__toString() . "<br>";
 
                 $pipeline = [
                     [

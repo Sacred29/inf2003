@@ -47,10 +47,13 @@ session_start();
             {
                 global $userId;
 
-                $client = new MongoDB\Client("mongodb+srv://inf2003-mongodev:toor@inf2003-part2.i7agx.mongodb.net/");
-                $db = $client->eLibDatabase;
+                $mongoUri = getenv('MONGODB_URI') ?: 'mongodb://mongodb:27017';
+                $client = new MongoDB\Client($mongoUri);
+                $db = $client->eLibDatabase;  
                 $borrowedCollection = $db->Borrowed;
-                $date = date("Y-m-d");
+                $booklistCollection = $db->books;
+                // $date = date("Y-m-d");
+                $date = new MongoDB\BSON\UTCDateTime();
 
                 //update first
                 $expiredRecords = $borrowedCollection->aggregate([
@@ -77,13 +80,14 @@ session_start();
                     );
 
                     // Increase the quantity in booklist collection
-                    $borrowedCollection->updateOne(
+                    $booklistCollection->updateOne(
                         ['isbn' => $record['isbn']],
                         ['$inc' => ['quantity' => 1]]
                     );
                 }
 
                 //show borrowed collection
+                $borrowedCollection = $db->Borrowed;
                 $borrowedRecords = $borrowedCollection->aggregate([
                         ['$match' => ['userID' => $userId]],
                         ['$lookup' => [
@@ -101,8 +105,10 @@ session_start();
                     $borrowedID = $row['borrowID'];
                     $bookID = $row['ISBN'];
                     $bookTitle = $row['bookDetails']['title'];
-                    $borrowedDate = $row['borrowedDate'];
-                    $expiryDate = $row['expiryDate'];
+                    // $borrowedDate = $row['borrowedDate'];
+                    // $expiryDate = $row['expiryDate'];
+                    $borrowedDate = $row['borrowedDate']->toDateTime()->format('Y-m-d');
+                    $expiryDate = $row['expiryDate']->toDateTime()->format('Y-m-d');
                     $status = $row['status'];
 
                     echo "<tr>";
